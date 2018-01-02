@@ -8,8 +8,8 @@ function validate(form)
     failp = validatePassword(password)
 
     if (password===password2) fail = ""
-    else fail = "Passwords did not match"
-    if (username==password) fail += "Password may not be the same as your Username!"
+    else fail = "Passwords did not match. "
+    if (username==password) fail += "Password may not be the same as your Username! "
     fail += failu
     fail += failp
     //They should have be checked already by HTML for validity
@@ -42,18 +42,18 @@ function validatelogin(form)
 function validateUsername(field)
 {
     failtype = "";
-    if (field=="") failtype = "No Username was entered.\n";
+    if (field=="") failtype = "No Username was entered.\n ";
     else if (/[^a-zA-Z0-9_-]/.test(field))
-        failtype = "Invalid characters in username";
-    else if (/.*guest.*/.test(field)) failtype = "Sorry, the word guest is not allowed in a username.";
+        failtype = "Invalid characters in username. ";
+    else if (/.*guest.*/.test(field)) failtype = "Sorry, the word guest is not allowed in a username. ";
     return failtype;
 }
 function validatePassword(field)
 {
     failtype = "";
-    if (field=="") failtype = "No Password was entered.\n";
-    else if (field.length < 6) failtype = "Password needs to be 6 or more characters.\n";
-    else if (/[^a-zA-Z0-9_-]/.test(field)) failtype = "Invalid characters in password";
+    if (field=="") failtype = "No Password was entered.\n ";
+    else if (field.length < 6) failtype = "Password needs to be 6 or more characters.\n ";
+    else if (/[^a-zA-Z0-9_-]/.test(field)) failtype = "Invalid characters in password. ";
     return failtype;
 }
 function showhide(buttonID,pwNames)

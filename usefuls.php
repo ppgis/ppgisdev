@@ -32,7 +32,7 @@ function doheader($pageTitle){
 <head>
     <meta charset="UTF-8">
     <title>PPGIS $pageTitle</title>
-    <script type="text/javascript" src="/PPGIS/validatestuff.js"></script>
+    <script type="text/javascript" src="/js/validatestuff.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/login.css">
 </head>
 END;
@@ -45,7 +45,7 @@ function doheader2($pageTitle,$sessionuname,$gotonext,$backhere){
     $stuff= <<<END
     <meta charset="UTF-8">
     <title>PPGIS $pageTitle</title>
-    <script type="text/javascript" src="/PPGIS/validatestuff.js"></script>
+    <script type="text/javascript" src="/js/validatestuff.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/login.css">
     <script type="text/javascript">
     function confirmLogin(){
