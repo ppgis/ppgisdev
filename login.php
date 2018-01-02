@@ -28,6 +28,7 @@ if (!empty($_SESSION['sessionuname'])){
     $sessionuname = $_SESSION['sessionuname'];
     $msgtype='nice';
     $isloggedin = true;
+    $backhere = 'login.php';
 }
 else {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -124,7 +125,7 @@ else {
 if ($message != "") {//we have to go somewhere else
 //if login worked
     if ($message === $goodlogin) {
-        session_start();
+        //this was already done session_start();
         $_SESSION['login'] = "1";
         $_SESSION['sessionuname'] = $sessionuname;
         $_SESSION['isguest'] = $isguest;
@@ -139,29 +140,12 @@ if ($message != "") {//we have to go somewhere else
 if ($errorMessage != "") $displaycp = 'block';
 else $displaycp = 'none';
 $h3 = "Login";
-
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <?php doheader2($h3) ?>
-    <script type="text/javascript">
-        function confirmLogin(){
-            var username  = '<?php echo $sessionuname;?>';
-            var previouspage  = '<?php echo $gotonext;?>';
-            var needtologout =  confirm("You are already logged in as "+username+".\n Do you want to log in as a different user?");
-
-            if (needtologout){
-                //log out and come back
-                window.location.href = 'logout.php?gotonext=login.php'
-            }
-            else {
-                //go back to previous
-                window.location.href = previouspage
-            }
-        }
-    </script>
+    <?php doheader2($h3,$sessionuname,$gotonext,$backhere) ?>
 </head>
 <body>
 <?php dotopbit($h3) ?>

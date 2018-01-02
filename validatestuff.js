@@ -25,15 +25,15 @@ function validatelogin(form)
     //console.log('here')
     username = form.username.value;
     password = form.password.value;
-    failu = validateUsername(username)
-    failp = validatePassword(password)
+    failu = validateUsername(username);
+    failp = validatePassword(password);
 
-    fail = ""
-    fail += failu
-    fail += failp
+    fail = "";
+    fail += failu;
+    fail += failp;
     //They should have be checked already by HTML for validity
 
-    if (fail == "") return true
+    if (fail == "") return true;
     else {alert(fail);
         fail = "Please try again<br>"+fail;
         document.getElementById('signuperror').innerHTML=fail;
@@ -41,18 +41,20 @@ function validatelogin(form)
 }
 function validateUsername(field)
 {
-    if (field=="") return "No Username was entered.\n"
+    failtype = "";
+    if (field=="") failtype = "No Username was entered.\n";
     else if (/[^a-zA-Z0-9_-]/.test(field))
-        return "Invalid characters in username"
-    return ""
+        failtype = "Invalid characters in username";
+    else if (/.*guest.*/.test(field)) failtype = "Sorry, the word guest is not allowed in a username.";
+    return failtype;
 }
 function validatePassword(field)
 {
-    if (field=="") return "No Password was entered.\n"
-    else if (field.length < 6) return "Password needs to be 6 or more characters.\n"
-    else if (/[^a-zA-Z0-9_-]/.test(field))
-        return "Invalid characters in password"
-    return ""
+    failtype = "";
+    if (field=="") failtype = "No Password was entered.\n";
+    else if (field.length < 6) failtype = "Password needs to be 6 or more characters.\n";
+    else if (/[^a-zA-Z0-9_-]/.test(field)) failtype = "Invalid characters in password";
+    return failtype;
 }
 function showhide(buttonID,pwNames)
 {

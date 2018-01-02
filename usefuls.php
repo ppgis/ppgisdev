@@ -39,12 +39,31 @@ END;
     echo $stuff;
 }
 
-function doheader2($pageTitle){
+function doheader2($pageTitle,$sessionuname,$gotonext,$backhere){
+    //header for users who are alreday logged in
+    //note that the head tags are missing from this version
     $stuff= <<<END
     <meta charset="UTF-8">
     <title>PPGIS $pageTitle</title>
     <script type="text/javascript" src="/PPGIS/validatestuff.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/login.css">
+    <script type="text/javascript">
+    function confirmLogin(){
+        var username  = '$sessionuname';
+        var previouspage  = '$gotonext';
+        var backhere = '$backhere';
+        var needtologout =  confirm('You are already logged in as '+username+'.\\n You will be logged out if you continue. Is that OK?');
+
+        if (needtologout){
+            //log out and come back
+            window.location.href = 'logout.php?gotonext='+backhere
+        }
+        else {
+            //go back to previous
+            window.location.href = previouspage
+        }
+    }
+    </script>
 END;
     echo $stuff;
 }
