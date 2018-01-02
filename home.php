@@ -4,7 +4,6 @@ $config = parse_ini_file('/usr/local/bin/PPGISdev/config.ini');
 require_once "test_input.php";
 require_once "dbfns.php";
 require_once "usefuls.php";
-require_once "messages.php";
 require_once "/usr/local/bin/PPGISdev/messages.php";
 $h3 = "home";
 
