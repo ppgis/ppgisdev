@@ -156,7 +156,7 @@ $h3 = "Login";
     <div class="dialogue">
         <div class="error" id="signuperror"><?php echo $errorMessage ?></div>
     </div>
-    <form method="post" action="login.php" onsubmit="return validatelogin(this)">
+    <form method="post" action="login.php" onsubmit="return validate(this,'up')">
         <div class="formtext">Username:</div>
         <input type="text" class="lat-long" name="username" required="required"
                placeholder="Username" pattern="[a-zA-Z0-9_-]{1,25}" title="use a-z A-z 0-9 - _ and no spaces">

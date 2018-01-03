@@ -1,26 +1,36 @@
-function validate(form)
+function validate(form,formtype)
 {
-    //console.log('here')
-    username = form.username.value;
-    password = form.password.value;
-    password2 = form.retype_password.value;
-    failu = validateUsername(username)
-    failp = validatePassword(password)
-
-    if (password===password2) fail = ""
-    else fail = "Passwords did not match. "
-    if (username==password) fail += "Password may not be the same as your Username! "
-    fail += failu
-    fail += failp
+    //formtype  is a string including any of the letters upre
+    var failu,failp,failp2,failup,faile;
+    failu = failp = failp2 = failup = faile = "";
+    if (/u/.test(formtype)) {
+        var username = form.username.value;
+        failu = validateUsername(username);
+    }
+    if (/p/.test(formtype)) {
+        var password = form.password.value;
+        failp = validatePassword(password);
+        if ((/u/.test)&& (username==password)) failup = "Password may not be the same as your Username! ";
+    }
+    if (/r/.test(formtype)) {
+        var password2 = form.retype_password.value;
+        if (password !== password2) failp2 = "Passwords did not match. ";
+    }
+    //only rudimentary email testing
+    if (/e/.test(formtype)){
+        var email = form.email.value;
+        if (!/.+@.+..+/.test(email)) faile = "Non-conformal Email address.";
+    }
+    var fail = failu+failp+failp2+failup+faile;
+    fail = fail.replace(/\. */g,".\n");
     //They should have be checked already by HTML for validity
-
     if (fail == "") return true
     else {alert(fail);
-          fail = "Please try again<br>"+fail;
+          fail = "Please try again<br>"+fail.replace(/\n/g, "<br />");
           document.getElementById('signuperror').innerHTML=fail;
           return false}
 }
-function validatelogin(form)
+/*function validatelogin(form)
 {
     //console.log('here')
     username = form.username.value;
@@ -38,21 +48,21 @@ function validatelogin(form)
         fail = "Please try again<br>"+fail;
         document.getElementById('signuperror').innerHTML=fail;
         return false}
-}
+}*/
 function validateUsername(field)
 {
     failtype = "";
-    if (field=="") failtype = "No Username was entered.\n ";
+    if (field=="") failtype = "No Username was entered. ";
     else if (/[^a-zA-Z0-9_-]/.test(field))
         failtype = "Invalid characters in username. ";
-    else if (/.*guest.*/.test(field)) failtype = "Sorry, the word guest is not allowed in a username. ";
+    else if (/.*guest.*/.test(field)) failtype = "Lowercase guest cannot be included in username. ";
     return failtype;
 }
 function validatePassword(field)
 {
     failtype = "";
-    if (field=="") failtype = "No Password was entered.\n ";
-    else if (field.length < 6) failtype = "Password needs to be 6 or more characters.\n ";
+    if (field=="") failtype = "No Password was entered.";
+    else if (field.length < 6) failtype = "Password needs to be 6 or more characters.";
     else if (/[^a-zA-Z0-9_-]/.test(field)) failtype = "Invalid characters in password. ";
     return failtype;
 }

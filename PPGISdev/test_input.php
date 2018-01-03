@@ -20,7 +20,7 @@ function test_uname($uname){
     if ($unamelength < 3) $result = "Invalid username: make it longer";
     if ($unamelength > 25) $result = "Invalid username: make it shorter";
     //test for the word 'guest'
-    if (strpos($uname, 'guest') !== false) $result="Sorry, the word guest is not allowed in a username.";
+    if (strpos($uname, 'guest') !== false) $result="This word is restricted.";
     //test for bad characters
     if (preg_match("/[^a-zA-Z0-9-_]/", $uname)) $result = "Invalid username";
     return $result;

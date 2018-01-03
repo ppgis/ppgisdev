@@ -168,7 +168,7 @@ $h3 = "password change";
             <li>password should not be the same as your username!</li>
             <li>email address will be used for password recovery</li>
         </ul></div>
-    <form method="post" action="cp.php" onsubmit="return validate(this)">
+    <form method="post" action="cp.php" onsubmit="return validate(this,'pr')">
         <div class="formtext">New password for <?php echo $uname?>:<br>
             <button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password','retype_password'])">(show)</button></div>
         <input type="password" class="lat-long" name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"

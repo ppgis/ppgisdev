@@ -85,10 +85,10 @@ else {
                     //else $errorMessage = $retval;
                 }
             } else {
-                $message = "Database Connect error. Please contact the website administrator.";
+                $message = "Database Connect error. ". $config['syserror'];
             }
         } else {
-            $message = "Registration problem. Please contact the website administrator";
+            $message = "Registration problem. ".$posterror." ". $config['syserror'];
         }
     }
 }
@@ -131,7 +131,7 @@ $h3 = "Sign Up";
         <li>password should not be the same as your username!</li>
         <li>email address will be used for password recovery</li>
     </ul></div>
-        <form method="post" action="signup.php" onsubmit="return validate(this)">
+        <form method="post" action="signup.php" onsubmit="return validate(this,'upre')">
             <div class="formtext">Create a username:</div>
             <input type="text" class="lat-long" name="username" required="required"
                    placeholder="Username" pattern="[a-zA-Z0-9_-]{3,25}" title="at least 3 characters from a-z A-z 0-9 - _ and no spaces">
