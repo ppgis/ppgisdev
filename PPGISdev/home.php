@@ -6,13 +6,19 @@ require_once "dbfns.php";
 require_once "usefuls.php";
 require_once "/usr/local/bin/PPGISdev/messages.php";
 $h3 = "home";
+$testforguest = $config['testforguest'];
+$loggedin = false;
 
 session_start();
 $_SESSION['comebackto'] = 'home.php';
 if (!empty($_SESSION['sessionuname'])) $loggedin = true;
 if ($loggedin){
-    if ($_SESSION['isguest']=='true')$displayname = 'Guest';
-    else $displayname = $_SESSION['sessionuname'];
+    if ($_SESSION['isguest']=='true'){
+        $displayname = 'Guest';
+    }
+    else {
+        $displayname = $_SESSION['sessionuname'];
+    }
 }
 else{
     $displayname = 'not logged in';
@@ -31,8 +37,12 @@ else{
     <div class="homedialogue">
         <p>Welcome to <span class="uq_purple">UQ PPGIS</span>.</p>
         <?php homemessage($loggedin,$displayname) ?>
-        </div>
     </div>
+    <?php if (!$loggedin) {
+        echo "<div class='homedialogue'> Alternatively, you may complete a single private session<br> " ;
+        echo "<a href='login.php?guesty=$testforguest'>as a guest</a></div>";
+    }
+    ?>
 </div>
 
 

@@ -25,7 +25,6 @@ function homemessage($loggedin,$displayname){
      if (!$loggedin){
          $stuff = <<<END
     <p>To do some mapping, please <a href="signup.php"> register</a> or <a href="login.php">log in</a>.</p>
-    To trial our system you may also continue as a guest from the <a href=""login.php">log in</a> page.
 END;
      }
      else {

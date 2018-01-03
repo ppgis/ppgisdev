@@ -21,6 +21,24 @@ $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
 
 $isloggedin = false;
+$isaguest = false;
+$badguest = true;
+$testforguest = $config['testforguest'];
+
+//are we trying to be a guest? Could come from post or get
+if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['guesty']))){
+    $isaguest = true;
+    if (test_input($_POST['guesty'])===$testforguest){
+        $badguest = false;
+    };
+}
+if (($_SERVER['REQUEST_METHOD'] == 'GET') && (isset($_GET['guesty']))){
+    $isaguest = true;
+    if (test_input($_GET['guesty'])===$testforguest){
+        $badguest = false;
+    };
+}
+
 
 //already have a session?
 if (!empty($_SESSION['sessionuname'])){
@@ -31,13 +49,11 @@ if (!empty($_SESSION['sessionuname'])){
     $backhere = 'login.php';
 }
 else {
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        //require '../../configure.php';
-        if (isset($_POST['guesty']) && true) {
-            //clean up the input
-            $isguesty = test_input($_POST['guesty']);
+    if ($isaguest || ($_SERVER['REQUEST_METHOD'] == 'POST')) {
+        //guest first
+        if ($isaguest) {
             //check for a valid guest
-            if ($isguesty == "isguesty") {
+            if (!$badguest) {
                 //do guest login
                 // connect to db
                 $mysqli = new mysqli('localhost', $config['uname'], $config['password'], $config['dbname']);
@@ -77,7 +93,7 @@ else {
                 } else {
                     $message = "Database Connect error.<br>" . $config['syserror'];
                 }
-            } else {
+            } else {//bad guest!
                 $message = "Bad POST";
             }
 
@@ -169,7 +185,7 @@ $h3 = "Login";
     <div class="goto" ><a href="cprequest.php" style="display:<?php echo $displaycp?>">Forgotten Password?</a></div>
     <div style="background-color: white;width: 100%">
         <form method="post" action="login.php">
-            <input type="hidden" name="guesty" value="isguesty">
+            <input type="hidden" name="guesty" value="<?php echo $testforguest?>">
             <p><input type="submit" value="Continue as Guest" id="guesty"></p>
         </form>
     </div>
