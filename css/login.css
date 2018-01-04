@@ -59,7 +59,7 @@
 	width: 65%;
 	height: 400px;
 	margin: auto;
-	background-color: #E8;
+	background-color: #E8E8E8;
 }
 .lat-long {
 	padding: 2px;
@@ -133,27 +133,38 @@ h3 {
         color: ivory;
 	text-decoration: none;
 }
-nav {
-	padding: 0px;
+nav  ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #455472;
 }
-nav ul{
-	padding: 0px;
+nav li:first-child{
+	float: left;
 }
-
-nav ul li:first-child { float: left; 
-  padding: 0px;
-  padding-right: 10px;
-}
-
-nav ul li { 
-  list-style:none;
-  float: right; 
-  padding: 0px;
-  padding-right: 15px;
+nav li {
+	float: right;
 }
 
-nav ul li a:link {
-    text-decoration: none;
+
+nav li a {
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+.navnotli {
+	padding: 14px 16px;
+}
+
+nav li a:hover:not(.navactive) {
+	background-color: #404864;
+}
+
+.navactive {
+	background-color: #540060;
 }
 
 a:visited {

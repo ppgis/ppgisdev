@@ -11,6 +11,7 @@ $errorMessage = "";//will display on page
 $msgtype='bad';
 $message = "";//will display on error page
 $backhere = 'login.php';//in case we need to logout and come back here
+$isguest = '0';
 
 $uname = "";
 $pword = "";
@@ -22,27 +23,12 @@ $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
 
 $isloggedin = false;
-$isaguest = false;
-$badguest = true;
+
 $testforguest = $config['testforguest'];
-
-//are we trying to be a guest? Could come from post or get
-if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['guesty']))){
-    $isaguest = true;
-    if (test_input($_POST['guesty'])===$testforguest){
-        $badguest = false;
-    };
-}
-if (($_SERVER['REQUEST_METHOD'] == 'GET') && (isset($_GET['guesty']))){
-    $isaguest = true;
-    if (test_input($_GET['guesty'])===$testforguest){
-        $badguest = false;
-    };
-}
-
 
 //already have a session?
 if (!empty($_SESSION['sessionuname'])){
+    //this will automatically make the user confirm that they want to continue
     //get uname
     $sessionuname = $_SESSION['sessionuname'];
     $msgtype='nice';
@@ -50,6 +36,24 @@ if (!empty($_SESSION['sessionuname'])){
 
 }
 else {
+    $isaguest = false;
+    $badguest = true;
+
+    //are we trying to be a guest? Could come from post or get
+    if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['guesty']))){
+        $isaguest = true;
+        if (test_input($_POST['guesty'])===$testforguest){
+            $badguest = false;
+        };
+    }
+    if (($_SERVER['REQUEST_METHOD'] == 'GET') && (isset($_GET['guesty']))){
+        $isaguest = true;
+        if (test_input($_GET['guesty'])===$testforguest){
+            $badguest = false;
+        };
+    }
+
+
     if ($isaguest || ($_SERVER['REQUEST_METHOD'] == 'POST')) {
         //guest first
         if ($isaguest) {
@@ -82,11 +86,13 @@ else {
                         } else {
                             $isguest = '1';
                             $sessionuname = 'Guest';
+                            $dbuname = $uname;
                             $message = $goodlogin;
                         }
                     } else {//must have found this guest but we will let them continue
                         $isguest = '1';
                         $sessionuname = 'Guest';
+                        $dbuname = $uname;
                         $message = $goodlogin;
                     }
 
@@ -119,6 +125,7 @@ else {
                         $message = $goodlogin;
                         $isguest = '0';
                         $sessionuname = $uname;
+                        $dbuname = $uname;
                     } else {
                         $errorMessage = "Username/Password mismatch";
                         //session_start();
@@ -140,15 +147,16 @@ else {
 //OK what now?
 
 if ($message != "") {//we have to go somewhere else
-//if login worked
+//if login worked START a SESSION!!!
     if ($message === $goodlogin) {
-        //this was already done session_start();
+        // session_start() has been done;
         $_SESSION['login'] = "1";
         $_SESSION['sessionuname'] = $sessionuname;
+        $_SESSION['dbuname'] = $dbuname;
         $_SESSION['isguest'] = $isguest;
         header($phpgotonext);
     } else {
-//if something bad happened
+//if something bad happened TODO make sure session is unset?
         $errorPageMessage = "Location: errorpage.php?message=" . $message . "&msgtype=" . $msgtype;
         header($errorPageMessage);
     }
@@ -165,7 +173,7 @@ $h3 = "Login";
     <?php doheader2($h3,$sessionuname,$gotonext,$backhere) ?>
 </head>
 <body>
-<?php dotopbit($h3) ?>
+<?php dotopbit2($loggedin,$displayname,$activepage) ?>
 
 <?php if ($isloggedin) echo "<script type='text/javascript'> window.onload = confirmLogin();</script>";   ?>
 

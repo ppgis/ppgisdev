@@ -119,7 +119,7 @@ $h3 = "Sign Up";
 <?php doheader2($h3,$sessionuname,$gotonext,$backhere) ?>
 </head>
 <body>
-<?php dotopbit($h3) ?>
+<?php dotopbit2('','',$activepage) ?>
 <?php if ($isloggedin) echo "<script type='text/javascript'> window.onload = confirmLogin();</script>";   ?>
 
 <div class="contentcontainer">

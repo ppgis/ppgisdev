@@ -6,11 +6,14 @@ require_once "dbfns.php";
 require_once "usefuls.php";
 require_once "/usr/local/bin/PPGISdev/messages.php";
 $h3 = "home";
+$activepage = "home.php";
 $testforguest = $config['testforguest'];
 $loggedin = false;
 
 session_start();
-$_SESSION['comebackto'] = 'home.php';
+//have we somewhere to go back to like mapping etc?
+if ( empty($_SESSION['comebackto'])) $_SESSION['comebackto'] = 'home.php';
+
 if (!empty($_SESSION['sessionuname'])) $loggedin = true;
 if ($loggedin){
     if ($_SESSION['isguest']=='true'){
@@ -28,10 +31,9 @@ else{
 <!DOCTYPE html>
 <html>
 
-
 <?php doheader($h3) ?>
 <body>
-<?php dotopbit2($loggedin,$displayname) ?>
+<?php dotopbit2($loggedin,$displayname,$activepage) ?>
 
 <div class="contentcontainer">
     <div class="homedialogue">

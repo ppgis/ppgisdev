@@ -79,25 +79,37 @@ END;
     echo $stuff;
 }
 
-function dotopbit2($loggedin,$displayname){
-
-    $stuff=<<<END
-<span class="pagebanner2">
-<nav class="darkbg">
-    <ul style="list-style-type: none">
-        <li><a  href="home.php">PPGIS</a></li>
-END;
-    echo $stuff;
+function dotopbit2($loggedin,$displayname,$activepage){
+    //$activepage will be a nice short url TODO make this work for html?
+    $activepage = test_input($_SERVER['SCRIPT_NAME']);
+    //get rid of trailing stuff
+    $activepage = preg_replace('/.php.*/','.php',$activepage);
+    //get rid of leading stuff
+    $activepage = preg_replace('/^.*\//','',$activepage);
+$pages = array(
+    'Mapping' => 'map.php');//this is for the pages after log in
+    //first do the PPGIS link on the LHS of the topbar
+    echo "<span class='pagebanner2'>";
+    echo "<nav class='darkbg'>";
+    echo "<ul style='list-style-type: none'>";
+    echo "    <li><a  href='home.php'>PPGIS</a></li>";
+    //from now on need to add navactive tag if $activepage
     if ($loggedin){
-        echo "<li><a href=logout.php>Logout</a></li>";
+        if ($activepage=='logout.php') echo "<li><a class='navactive' href='logout.php'>Logout</a></li>";
+        else echo "<li><a href='logout.php'>Logout</a></li>";
     } else{
-        echo "<li><a href=login.php>Login</a></li>";
+        if ($activepage=='login.php') echo "<li><a class='navactive' href=login.php>Login</a></li>";
+        else echo "<li><a href='login.php'>Login</a></li>";
     }
     echo "<li><a href=\"mailhandler.php\">Contact</a></li>";
-    echo "<li><a href=\"home.php\">Home</a></li>";
+    if ($activepage=='home.php') echo "<li><a class='navactive' href='home.php'>Home</a></li>";
+    else echo "<li><a href='home.php'>Home</a></li>";
     if ($loggedin){
-        echo "<li><a href=map.html>Mapping</a></li>";
-        echo "<li class='emph'><i>&#9734 $displayname &#9734</i></li>";
+        foreach ($pages as $pagetitle => $pageurl) {
+            if ($activepage==$pageurl) echo "<li><a class = 'navactive' href='$pageurl'>$pagetitle</a></li>";
+            else echo "<li><a href='$pageurl'>$pagetitle</a></li>";
+        }
+        echo "<li class='emph navnotli'><i>&#9734 $displayname &#9734</i></li>";
     }
     $stuff = <<<END
     </ul>
@@ -118,3 +130,7 @@ END;
     echo $stuff;
 }
 
+function phpAlertandgohome($msg){
+    echo"<script type='text/javascript'>alert('$msg');window.location.href = 'home.php'</script>";
+
+}
