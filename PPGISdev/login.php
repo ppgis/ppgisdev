@@ -10,6 +10,7 @@ $goodlogin = "Login worked";
 $errorMessage = "";//will display on page
 $msgtype='bad';
 $message = "";//will display on error page
+$backhere = 'login.php';//in case we need to logout and come back here
 
 $uname = "";
 $pword = "";
@@ -46,7 +47,7 @@ if (!empty($_SESSION['sessionuname'])){
     $sessionuname = $_SESSION['sessionuname'];
     $msgtype='nice';
     $isloggedin = true;
-    $backhere = 'login.php';
+
 }
 else {
     if ($isaguest || ($_SERVER['REQUEST_METHOD'] == 'POST')) {
