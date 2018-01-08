@@ -39,6 +39,18 @@ END;
     echo $stuff;
 }
 
+function doheadermin($pageTitle){
+    $stuff= <<<END
+    <meta charset="UTF-8">
+    <title>PPGIS $pageTitle</title>
+    <script type="text/javascript" src="/js/validatestuff.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/login.css">
+END;
+    echo $stuff;
+}
+
+
+
 function doheader2($pageTitle,$sessionuname,$gotonext,$backhere){
     //header for users who are already logged in
     //note that the head tags are missing from this version

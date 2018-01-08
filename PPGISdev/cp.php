@@ -16,7 +16,15 @@ require_once "usefuls.php";
 $requestType = $_SERVER['REQUEST_METHOD'];
 
 $loggedin = false;
+
+$goodlogin = "Password change worked";
+
 session_start();
+
+//were to go back to after change password?
+$gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
+$phpgotonext = "Location: ".$gotonext;
+
 if (!empty($_SESSION['sessionuname'])) $loggedin = true;
 if ($loggedin){
     if ($_SESSION['isguest']=='true'){
@@ -36,6 +44,8 @@ $iscleantoken = false;
 $message = "";
 $errorMessage = "";
 
+$needswarning = false;
+
 //Not getting in without a token
 switch ($requestType) {
     case 'POST':
@@ -46,6 +56,7 @@ switch ($requestType) {
         else $message = "unrecognized POST value";//not a valid call to this page
         break;
     case 'GET':
+        if ($loggedin) $needswarning = true;
         if (isset($_GET['token'])) {
             $token = test_input($_GET['token']);//clean it up
             $iscleantoken = true;
@@ -110,7 +121,7 @@ if ($message == "") {
         $uname = $stuff["uname"];
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
+//TODO test if these POST variables exist
             $pword = test_input($_POST['password']);
             $pword2 = test_input($_POST['retype_password']);
 
@@ -144,7 +155,7 @@ if ($message == "") {
                         $message = $retval . $config['syserror'];
                     } else {
                         $msgtype = 'success';
-                        $message = "Your password has been changed. You will need to login with the new password to continue.";
+                        $message = $goodlogin;
                     }
                 }
             } else {
@@ -158,8 +169,19 @@ if ($message == "") {
 }
 
 if ($message !="") {
-    $errorMessage = "Location: errorpage.php?message=".$message."&msgtype=".$msgtype;
-    header($errorMessage);
+    if ($message === $goodlogin) {
+        //log in
+        // session_start() has been done;
+        $_SESSION['login'] = "1";
+        $_SESSION['sessionuname'] = $uname;
+        $_SESSION['dbuname'] = $uname;
+        //not a guest after signup!!!
+        $_SESSION['isguest'] = '0';
+        header($phpgotonext);
+    } else {
+        $errorMessage = "Location: errorpage.php?message=" . $message . "&msgtype=" . $msgtype;
+        header($errorMessage);
+    }
 }
 //else
 
@@ -169,10 +191,18 @@ $pagetitle = "password change";
 
 <!DOCTYPE html>
 <html>
-<?php doheader($pagetitle) ?>
+<head>
+<?php doheadermin($pagetitle) ?>
+<script type="text/javascript">
+    function loggedinAlert(){
+        alert("You are already logged in. If you continue, you will be logged out and a new session started.");
+    }
+</script>
+</head>
+
 <body>
 <?php dotopbit2($loggedin,$displayname) ?>
-
+<?php if ($needswarning) echo "<script type='text/javascript'> window.onload = loggedinAlert();</script>";   ?>
 
 <div class="contentcontainer">
     <div class="dialogue">
