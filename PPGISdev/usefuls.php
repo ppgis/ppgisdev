@@ -79,8 +79,7 @@ END;
     echo $stuff;
 }
 
-function dotopbit2($loggedin,$displayname,$activepage){
-    //$activepage will be a nice short url TODO make this work for html?
+function dotopbit2($loggedin,$displayname){
     $activepage = test_input($_SERVER['SCRIPT_NAME']);
     //get rid of trailing stuff
     $activepage = preg_replace('/.php.*/','.php',$activepage);
@@ -100,6 +99,9 @@ $pages = array(
     } else{
         if ($activepage=='login.php') echo "<li><a class='navactive' href=login.php>Login</a></li>";
         else echo "<li><a href='login.php'>Login</a></li>";
+
+        if ($activepage=='signup.php') echo "<li><a class='navactive' href=signup.php>Sign up</a></li>";
+        else {echo "<li><a href='signup.php'>Sign up</a></li>";}
     }
     echo "<li><a href=\"mailhandler.php\">Contact</a></li>";
     if ($activepage=='home.php') echo "<li><a class='navactive' href='home.php'>Home</a></li>";

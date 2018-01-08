@@ -15,6 +15,22 @@ require_once "usefuls.php";
 
 $requestType = $_SERVER['REQUEST_METHOD'];
 
+$loggedin = false;
+session_start();
+if (!empty($_SESSION['sessionuname'])) $loggedin = true;
+if ($loggedin){
+    if ($_SESSION['isguest']=='true'){
+        $displayname = 'Guest';
+    }
+    else {
+        $displayname = $_SESSION['sessionuname'];
+    }
+}
+else{
+    $displayname = 'not logged in';
+}
+
+
 $msgtype='bad';
 $iscleantoken = false;
 $message = "";
@@ -23,16 +39,14 @@ $errorMessage = "";
 //Not getting in without a token
 switch ($requestType) {
     case 'POST':
-        $token = $_POST['token'];
-        if (isset($token)) {
+        if (isset($_POST['token'])) {
             $token = test_input($_POST['token']);//clean it up
             $iscleantoken = true;
         }
         else $message = "unrecognized POST value";//not a valid call to this page
         break;
     case 'GET':
-        $token = $_GET['token'];
-        if (isset($token)) {
+        if (isset($_GET['token'])) {
             $token = test_input($_GET['token']);//clean it up
             $iscleantoken = true;
         }
@@ -52,6 +66,7 @@ if ($iscleantoken){ //check for goodness
         $table = "cptoken";
         $token_exists = check_exist($mysqli, $table, 'token', $token, 's');
         if ($token_exists->num_rows < 1) {
+            //$debug = $token;
             $message = "token was not found in the database";
         } else {
             $stuff = $token_exists->fetch_assoc();//get mysqli result into an array
@@ -129,7 +144,7 @@ if ($message == "") {
                         $message = $retval . $config['syserror'];
                     } else {
                         $msgtype = 'success';
-                        $message = "Success! Your password has been changed";
+                        $message = "Your password has been changed";
                     }
                 }
             } else {
@@ -148,15 +163,15 @@ if ($message !="") {
 }
 //else
 
-$h3 = "password change";
+$pagetitle = "password change";
 
 ?>
 
 <!DOCTYPE html>
 <html>
-<?php doheader($h3) ?>
+<?php doheader($pagetitle) ?>
 <body>
-<?php dotopbit($h3) ?>
+<?php dotopbit2($loggedin,$displayname) ?>
 
 
 <div class="contentcontainer">
@@ -169,16 +184,17 @@ $h3 = "password change";
             <li>email address will be used for password recovery</li>
         </ul></div>
     <form method="post" action="cp.php" onsubmit="return validate(this,'pr')">
-        <div class="formtext">New password for <?php echo $uname?>:<br>
-            <button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password','retype_password'])">(show)</button></div>
-        <input type="password" class="lat-long" name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
-               placeholder="Password" title="use at least 6 of a-z A-z 0-9 - _ and no spaces">
-        <div class="formtext">retype the password:</div>
-        <input type="password" class="lat-long" name="retype_password" required="required">
-        <p>
-            <input type="hidden" name="token" value="<?php echo($token)?>" >
-        <p><input type="submit"></p>
-    </form>
+        <?php if ($message ==="") echo "<div class='formtext'>New password for $uname:<br>"; ?>
+        <button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password','retype_password'])">(show)</button>
+</div>
+<input type="password" class="lat-long" name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
+       placeholder="Password" title="use at least 6 of a-z A-z 0-9 - _ and no spaces">
+<div class="formtext">retype the password:</div>
+<input type="password" class="lat-long" name="retype_password" required="required">
+<p>
+    <?php if ($message ==="") echo "<input type='hidden' name='token' value=$token>"; ?>
+<p><input type="submit"></p>
+</form>
 
 </div>
 

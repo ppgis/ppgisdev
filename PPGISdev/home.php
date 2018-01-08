@@ -5,8 +5,8 @@ require_once "test_input.php";
 require_once "dbfns.php";
 require_once "usefuls.php";
 require_once "/usr/local/bin/PPGISdev/messages.php";
-$h3 = "home";
-$activepage = "home.php";
+$pagetitle = "home";
+
 $testforguest = $config['testforguest'];
 $loggedin = false;
 
@@ -31,9 +31,9 @@ else{
 <!DOCTYPE html>
 <html>
 
-<?php doheader($h3) ?>
+<?php doheader($pagetitle) ?>
 <body>
-<?php dotopbit2($loggedin,$displayname,$activepage) ?>
+<?php dotopbit2($loggedin,$displayname) ?>
 
 <div class="contentcontainer">
     <div class="homedialogue">

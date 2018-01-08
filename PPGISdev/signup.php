@@ -6,6 +6,8 @@ require_once "test_input.php";
 require_once "dbfns.php";
 require_once "usefuls.php";
 
+$pagetitle = "Sign Up";
+
 $goodlogin = "Sign up worked";
 $errorMessage = "";//will display on page
 $msgtype='bad';
@@ -16,29 +18,38 @@ session_start();
 $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
 
-$isloggedin = false;
+$loggedin = false;
 
 //already have a session?
 if (!empty($_SESSION['sessionuname'])){
     //get uname
     $sessionuname = $_SESSION['sessionuname'];
     $msgtype='nice';
-    $isloggedin = true;
+    $loggedin = true;
     $backhere = 'signup.php';
+    if ($_SESSION['isguest']=='true'){
+        $displayname = 'Guest';
+    }
+    else {
+        $displayname = $sessionuname;
+    }
 }
 else {
-
+    $displayname = "not logged in";
+    $sessionuname = "not logged in";
     $uname = "";
     $pword = "";
     $email = "";
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //require '../../configure.php';
+        $signupvars = array('username'=>'uname','password'=>'pword','retype_password'=>'pword2','email'=>'email');
 
-        $uname = test_input($_POST['username']);
-        $pword = test_input($_POST['password']);
-        $pword2 = test_input($_POST['retype_password']);
-        $email = test_input($_POST['email']);
+        foreach ($signupvars as $postname => $varname){
+            if (isset($_POST[$postname])) $$varname = test_input($_POST[$postname]);
+            else $$varname = "";
+
+        }
 
         $noemail = false;
         if ($email != "") $emailOK = test_email($email);
@@ -46,6 +57,7 @@ else {
             $emailOK = "";
             $noemail = true;
         }
+
         $unameOK = test_uname($uname);
         $passwordOK = test_pword($pword) ? "" : " Password not OK";
         if ($pword2 !== $pword) $diffpword = " Passwords differ!";
@@ -110,17 +122,17 @@ if ($message != "") {//we have to go somewhere else
     }
 }
 
-$h3 = "Sign Up";
+
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-<?php doheader2($h3,$sessionuname,$gotonext,$backhere) ?>
+<?php doheader2($pagetitle,$sessionuname,$gotonext,$backhere) ?>
 </head>
 <body>
-<?php dotopbit2('','',$activepage) ?>
-<?php if ($isloggedin) echo "<script type='text/javascript'> window.onload = confirmLogin();</script>";   ?>
+<?php dotopbit2($loggedin,$displayname) ?>
+<?php if ($loggedin) echo "<script type='text/javascript'> window.onload = confirmLogin();</script>";   ?>
 
 <div class="contentcontainer">
     <div class="dialogue">

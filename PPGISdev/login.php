@@ -6,6 +6,8 @@ require_once "dbfns.php";
 require_once "usefuls.php";
 require_once "/usr/local/bin/PPGISdev/messages.php";
 
+$pagetitle = "Login";
+
 $goodlogin = "Login worked";
 $errorMessage = "";//will display on page
 $msgtype='bad';
@@ -22,7 +24,7 @@ session_start();
 $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
 
-$isloggedin = false;
+$loggedin = false;
 
 $testforguest = $config['testforguest'];
 
@@ -32,10 +34,18 @@ if (!empty($_SESSION['sessionuname'])){
     //get uname
     $sessionuname = $_SESSION['sessionuname'];
     $msgtype='nice';
-    $isloggedin = true;
+    $loggedin = true;
+    if ($_SESSION['isguest']=='true'){
+        $displayname = 'Guest';
+    }
+    else {
+        $displayname = $_SESSION['sessionuname'];
+    }
 
 }
 else {
+    $displayname = "not logged in";
+    $sessionuname = "not logged in";
     $isaguest = false;
     $badguest = true;
 
@@ -164,18 +174,18 @@ if ($message != "") {//we have to go somewhere else
 //if something not so bad happened
 if ($errorMessage != "") $displaycp = 'block';
 else $displaycp = 'none';
-$h3 = "Login";
+
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <?php doheader2($h3,$sessionuname,$gotonext,$backhere) ?>
+    <?php doheader2($pagetitle,$sessionuname,$gotonext,$backhere) ?>
 </head>
 <body>
-<?php dotopbit2($loggedin,$displayname,$activepage) ?>
+<?php dotopbit2($loggedin,$displayname) ?>
 
-<?php if ($isloggedin) echo "<script type='text/javascript'> window.onload = confirmLogin();</script>";   ?>
+<?php if ($loggedin) echo "<script type='text/javascript'> window.onload = confirmLogin();</script>";   ?>
 
 <div class="contentcontainer">
     <div class="dialogue">
@@ -195,7 +205,7 @@ $h3 = "Login";
     <div style="background-color: white;width: 100%">
         <form method="post" action="login.php">
             <input type="hidden" name="guesty" value="<?php echo $testforguest?>">
-            <p><input type="submit" value="Continue as Guest" id="guesty"></p>
+            <p><input class="uq-emerald" type="submit" value="Continue as Guest" id="guesty"></p>
         </form>
     </div>
 </div>

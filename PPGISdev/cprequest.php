@@ -20,6 +20,22 @@ require_once "dbfns.php";
 require_once "usefuls.php";
 require_once "/usr/local/bin/PPGISdev/messages.php";
 
+$loggedin = false;
+session_start();
+if (!empty($_SESSION['sessionuname'])) $loggedin = true;
+if ($loggedin){
+    if ($_SESSION['isguest']=='true'){
+        $displayname = 'Guest';
+    }
+    else {
+        $displayname = $_SESSION['sessionuname'];
+    }
+}
+else{
+    $displayname = 'not logged in';
+}
+
+
 
 $email = "";
 $errorMessage = "";//will display on page
@@ -29,8 +45,11 @@ $message = "";//will display on error page
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $email = test_input($_POST['email']);
-    $emailOK = test_email($email);
+    if (isset($_POST['email'])) {
+        $email = test_input($_POST['email']);
+        $emailOK = test_email($email);
+    }
+    else $emailOK = "no email address entered. ";
 
     if ($emailOK == "") {
         $mysqli = new mysqli('localhost', $config['uname'], $config['password'], $config['dbname']);
@@ -92,14 +111,14 @@ if ($message !="") {
     header($errorPageMessage);
 }
 
-$h3 = "Request password change";
+$pagetitle = "Request password change";
 
 ?>
 <!DOCTYPE html>
 <html>
-<?php doheader($h3) ?>
+<?php doheader($pagetitle) ?>
 <body>
-<?php dotopbit($h3) ?>
+<?php dotopbit2($loggedin,$displayname) ?>
 
 
 <div class="contentcontainer">
