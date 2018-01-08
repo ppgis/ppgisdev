@@ -144,7 +144,7 @@ if ($message == "") {
                         $message = $retval . $config['syserror'];
                     } else {
                         $msgtype = 'success';
-                        $message = "Your password has been changed";
+                        $message = "Your password has been changed. You will need to login with the new password to continue.";
                     }
                 }
             } else {

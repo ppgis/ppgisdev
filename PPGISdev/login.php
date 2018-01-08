@@ -171,9 +171,12 @@ if ($message != "") {//we have to go somewhere else
         header($errorPageMessage);
     }
 }
-//if something not so bad happened
-if ($errorMessage != "") $displaycp = 'block';
-else $displaycp = 'none';
+//always show the change password link
+$displaycp = 'block';
+//here's another option if something not so bad happened
+//if ($errorMessage != "") $displaycp = 'block';
+//else $displaycp = 'none';
+
 
 ?>
 
