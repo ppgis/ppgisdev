@@ -82,7 +82,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $message = $retval;
                 } else {
                     //send email
-                    $href = "localhost/cp.php?token=" . $token;
+                    $protocol = $config['protocol'];
+		    $hostname = $config['hostname'];
+                    $deployment = $config['deployment'];
+                    $href = "$protocol://$hostname/$deployment/cp.php?token=$token";
                     $mailmessage = cpmessage($uname, $href);
 
                     $to = $email;
@@ -94,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     //did the sendmail work?
                     if ($mail_sent) {
                         $msgtype = "success";
-                        $message = "Success! Please check your email.";
+                        $message = "Please check your email.";
                     } else $message = "Error sending email" . $config['syserror'];
                     //else $errorMessage = $retval;
                 }
