@@ -39,7 +39,7 @@ END;
     echo $stuff;
 }
 
-function doheadermin($pageTitle){
+function doheadermin($pageTitle){//doesn't have the head tags
     $stuff= <<<END
     <meta charset="UTF-8">
     <title>PPGIS $pageTitle</title>
@@ -137,14 +137,14 @@ END;
 
 function dofooter(){
     $stuff=<<<END
-<footer class="pagebanner bottombit darkbg" >
-    <p><a href="mailhandler.php"> Contact</a></p>
+<footer class="bottombit darkbg" >
+    <a href="mailhandler.php"> Contact</a>
 </footer>
 END;
     echo $stuff;
 }
 
-function phpAlertandgohome($msg){
-    echo"<script type='text/javascript'>alert('$msg');window.location.href = 'home.php'</script>";
+function phpAlertandgo($msg,$page){
+    echo"<script type='text/javascript'>alert('$msg');window.location.href = '$page.php'</script>";
 
 }

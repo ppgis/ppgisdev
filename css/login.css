@@ -18,7 +18,11 @@
 .topbit{
 }
 .bottombit{
+	width: 100%;
+	background-color:  #455472;
+	text-align: center;
 	position: fixed;
+	padding: 0px;
 	bottom: 0;
 }
 .contentcontainer{
@@ -50,14 +54,36 @@
 	color: red;
 	margin: 20px;
 }
+.mapcontentcontainer{
+	width: 1000px;
+	margin: auto;
+	/*margin-top: 	0px;
+	margin-bottom: 20px;*/
+	display: table;
+	padding:1em;
+}
+.mapdialogue{
+	width: 150px;
+	margin:2em;
+	display: table-cell;
+	background-color: #455472;
+	border-radius: 0px;
+	text-align: center;
+	color: white;
+}
+
 .spacy{
-	width: 20px;
+	display: table-cell;
+}
+.mapcontainer {
 	display: table-cell;
 }
 .mappy{
-	display: table-cell;
-	width: 65%;
+	width: 800px;
 	height: 400px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
 	margin: auto;
 	background-color: #E8E8E8;
 }
@@ -152,11 +178,11 @@ nav li a {
 	display: block;
 	color: white;
 	text-align: center;
-	padding: 14px 16px;
+	padding: 8px 16px;
 	text-decoration: none;
 }
 .navnotli {
-	padding: 14px 16px;
+	padding: 8px 16px;
 }
 
 nav li a:hover:not(.navactive) {
@@ -200,4 +226,18 @@ a:active {
 
 .uq-emerald:focus {
 	box-shadow: 0 0 5px #39892f, 0 1px 0 rgba(255, 255, 255, .5) inset;
+}
+.icon {
+	margin:5px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	background-color: ghostwhite;
+	padding: 2px;
+	box-shadow: 2px 2px grey;
+	z-index: 10;
+	visibility: hidden;
+}
+.icon2 {
+	padding:5px 2px;
 }
