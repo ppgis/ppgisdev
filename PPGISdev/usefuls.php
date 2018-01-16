@@ -100,7 +100,6 @@ function dotopbit2($loggedin,$displayname){
 $pages = array(
     'Mapping' => 'map.php');//this is for the pages after log in
     //first do the PPGIS link on the LHS of the topbar
-    echo "<span class='pagebanner2'>";
     echo "<nav class='darkbg'>";
     echo "<ul style='list-style-type: none'>";
     echo "    <li><a  href='home.php'>PPGIS</a></li>";
@@ -128,7 +127,6 @@ $pages = array(
     $stuff = <<<END
     </ul>
 </nav>
-</span>
 END;
     echo $stuff;
 }
