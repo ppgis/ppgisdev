@@ -84,9 +84,9 @@ else {
                     $errorMessage = "Email address '$email' is already taken. Please try another.";
                 } else {
                     $phash = password_hash($pword, PASSWORD_DEFAULT);
-                    $colnames = array('uname', 'password', 'email');
-                    $values = array($uname, $phash, $email);
-                    $valuetypes = 'sss';
+                    $colnames = array('uname', 'password', 'email','stageID');
+                    $values = array($uname, $phash, $email,1);//status 1 for registered user
+                    $valuetypes = 'sssi';
                     $retval = insert_row($mysqli, $table, $colnames, $values, $valuetypes);
 
                     if (preg_match("/^error/", $retval)) {

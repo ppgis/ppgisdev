@@ -45,6 +45,7 @@ function placeMarker(location) {
             nmarker: nmarkers
         });
         //check that it worked?
+        //TODO no more than 40 of one marker type
         setTimeout(function(){ themarker.setAnimation(null); }, 750);
         console.log(currentID);
         console.log(themarker.iconID)
@@ -61,11 +62,11 @@ function placeMarker(location) {
             allmarkers.push(newmarkertype);
         }
         else {//retrieve and update
-            newmarkertype = allmarkers[markerstoredat];
-            newmarkertype.n += 1;
-            newmarkertype.lats.push(location.lat());
-            newmarkertype.longs.push(location.lng());
-            newmarkertype.nmarker.push(nmarkers);
+            oldmarkertype = allmarkers[markerstoredat];
+            oldmarkertype.n += 1;
+            oldmarkertype.lats.push(location.lat());
+            oldmarkertype.longs.push(location.lng());
+            oldmarkertype.nmarker.push(nmarkers);//ids of these markers
         }
         //allmarkers.push(themarker);
     //document.getElementById("latbox").innerHTML = location.lat().toFixed(6);
@@ -197,8 +198,10 @@ function anotherline() {
     var classname = 'rTC';
     var iconlist = document.getElementById('iconlist');
     iconlist.innerHTML = "";
+    var markertoadd;
     for (i = 0; i < allmarkers.length; i++) {
-        var markertoadd = allmarkers[i];
+        markertoadd = allmarkers[i];
+        //TODO describe marker class
         //add the number of icons
         makeappendspantext(iconlist,markertoadd.n,'rTCn');
         //add the images source//TODO cut this down
@@ -241,4 +244,28 @@ function makeappendspantext(theparent,childcontents,classname){
 function makeappendtext(theparent,childcontents){
     var newchild = document.createTextNode(childcontents);
     theparent.appendChild(newchild);
+}
+function removezeros(){
+    var zeros = [];
+    for (i = 0; i < allmarkers.length; i++) {
+        if ((themarker.n)==0) zeros.push(i);
+    }
+    for (i=0;i<zeros.length;i++){
+        allmarkers.splice(zeros[i],1);
+    }
+}
+function playjson(){
+    //get rid of paths because they break the security settings
+    //and remove the n=0 items if any
+    removezeros();
+    var themarker;
+    for (i = 0; i < allmarkers.length; i++) {
+        themarker = allmarkers[i];
+        themarker.src = themarker.src.replace(/.*\//, "");
+    }
+    var markersjson = JSON.stringify(allmarkers);
+    alert('markers are: '+markersjson);
+    document.getElementById('markersjson').value = markersjson;
+    alert('markers in form are: '+document.getElementById('markersjson').value);
+    document.getElementById('markerForm').submit();
 }

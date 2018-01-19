@@ -11,6 +11,17 @@ function test_input($data) {
     $data = htmlspecialchars($data);
     return $data;
 }
+
+/**
+ * @param $data
+ * @return string
+ */
+function test_json_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data,ENT_NOQUOTES);
+    return $data;
+}
 function test_uname($uname){
     //these test result strings will not usually be seen
     //but may be useful when debugging

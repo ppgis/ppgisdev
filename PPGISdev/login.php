@@ -86,9 +86,9 @@ else {
                         //unique email includes ip address
                         $ip = preg_replace('/\s+/', '', $_SERVER['REMOTE_ADDR']);
                         $email = preg_replace('/@/', '', $ip . $uname);
-                        $colnames = array('uname', 'password', 'email');
-                        $values = array($uname, $phash, $email);
-                        $valuetypes = 'sss';
+                        $colnames = array('uname', 'password', 'email','stageID');
+                        $values = array($uname, $phash, $email,0);//status 0 for guest user
+                        $valuetypes = 'sssi';
                         $retval = insert_row($mysqli, $table, $colnames, $values, $valuetypes);
 
                         if (preg_match("/^error/", $retval)) {

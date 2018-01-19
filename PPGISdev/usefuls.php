@@ -146,3 +146,6 @@ function phpAlertandgo($msg,$page){
     echo"<script type='text/javascript'>alert('$msg');window.location.href = '$page.php'</script>";
 
 }
+function ee ($string_message) {
+    $_SERVER['SERVER_PROTOCOL'] ? print "$string_message<br />" : print "$string_message\n";
+}

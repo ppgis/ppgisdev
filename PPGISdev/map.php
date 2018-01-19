@@ -9,22 +9,25 @@ require_once "mappingfns.php";
 require_once "/usr/local/bin/PPGISdev/messages.php";
 $pagetitle = "mapping";
 
-//$thing = test_input($_SERVER['SCRIPT_NAME']);
-//$thing = preg_replace('/^\//','',$thing);
 $testforguest = $config['testforguest'];
 $loggedin = false;
 
+$backfromsave = false;
+if (($_SERVER['REQUEST_METHOD'] == 'GET') && (isset($_GET['message']))){
+    if (test_input($_GET['message'])=='success') $backfromsave = true;
+}
 
 $errorMessage = "";//will display on page
 $msgtype='bad';
 $message = "";//will display on error page. anything in here will send us to the error page
+
 $activepage = test_input($_SERVER['SCRIPT_NAME']);
 //get rid of trailing stuff
 $activepage = preg_replace('/.php.*/','.php',$activepage);
 //get rid of leading stuff
 $activepage = preg_replace('/^.*\//','',$activepage);
 
-session_start();//TODO put this in a separate file for inclusion
+session_start();
 
 $_SESSION['comebackto'] = $activepage;
 //were to go back to after login if required?
@@ -103,7 +106,12 @@ if ($message != "") {//we have to go somewhere else
     <?php doheadermin($pagetitle) ?>
     <script type="text/javascript" src="/js/mapping.js"></script>
 </head>
-<body>
+<?php
+   if ($backfromsave){
+       echo "<body onload=\"alert('A draft of your map has been saved.')\">";
+   }
+   else echo "<body>";
+?>
 <?php dotopbit2($loggedin,$displayname) ?>
 <!--script>
 document.addEventListener("dragover", function( event ) {ecx = event.clientX;ecy = event.clientY}, false);
@@ -139,6 +147,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
         </div>
     <!--RHS-->
     <div class="RHS" id="RHSbig" style="display: none;">
+        <button onclick="playjson()">Click</button>
       Markers Placed:
         <div class="rT" id="iconlist"></div>
         <div class="arrowright"><img src="arrowout.png"  title="close list" onclick="hideele('RHS')"/></div>
@@ -172,7 +181,11 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
         <div class="mapcontainer" style="position: relative;display:table-cell;">
 
         </div>
-
+       <form id="markerForm" name="markerForm" method="post" action="savemap.php">
+					<input type="hidden" name="markersjson" id="markersjson" value="">
+           <input type="hidden" name="savetype" id="savetype" value="temp">
+					<button class="lat-long" id="submitmarkers" onclick="playjson();">Submit</button>
+       </form>
     <!--/div-->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap"></script>
 
