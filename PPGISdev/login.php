@@ -17,9 +17,13 @@ $isguest = '0';
 
 $uname = "";
 $pword = "";
-
-
+//changed session time in php.ini
+// server should keep session data for AT LEAST 2 hours
+//ini_set('session.gc_maxlifetime', 7200);
+// each client should remember their session id for EXACTLY 2 hours
+//session_set_cookie_params(7200);
 session_start();
+
 //were to go back to after login?
 $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
@@ -27,6 +31,7 @@ $phpgotonext = "Location: ".$gotonext;
 $loggedin = false;
 
 $testforguest = $config['testforguest'];
+
 
 //already have a session?
 if (!empty($_SESSION['sessionuname'])){
@@ -98,14 +103,17 @@ else {
                             $sessionuname = 'Guest';
                             $dbuname = $uname;
                             $message = $goodlogin;
+                            $userstage = '0';
                         }
+
                     } else {//must have found this guest but we will let them continue
                         $isguest = '1';
                         $sessionuname = 'Guest';
                         $dbuname = $uname;
                         $message = $goodlogin;
+                        $userstage = '0';
                     }
-
+                 //todo save a login event to the database
 
                 } else {
                     $message = "Database Connect error.<br>" . $config['syserror'];
@@ -130,12 +138,13 @@ else {
                 if ($user_found->num_rows == 1) {
 
                     $db_field = $user_found->fetch_assoc();//get the row values into an associative array
-
                     if (password_verify($pword, $db_field['password'])) {
                         $message = $goodlogin;
                         $isguest = '0';
                         $sessionuname = $uname;
                         $dbuname = $uname;
+                        $userstage = $db_field['stageID'];
+
                     } else {
                         $errorMessage = "Username/Password mismatch";
                         //session_start();
@@ -164,6 +173,7 @@ if ($message != "") {//we have to go somewhere else
         $_SESSION['sessionuname'] = $sessionuname;
         $_SESSION['dbuname'] = $dbuname;
         $_SESSION['isguest'] = $isguest;
+        $_SESSION['userstage'] = $userstage;
         header($phpgotonext);
     } else {
 //if something bad happened TODO make sure session is unset?

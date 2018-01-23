@@ -143,8 +143,8 @@ END;
 }
 
 function phpAlertandgo($msg,$page){
-    echo"<script type='text/javascript'>alert('$msg');window.location.href = '$page.php'</script>";
-
+    echo"<script type='text/javascript'>alert('$msg');document.location.href = '$page.php';</script>";
+    die;//otherwise it might not alert and go
 }
 function ee ($string_message) {
     $_SERVER['SERVER_PROTOCOL'] ? print "$string_message<br />" : print "$string_message\n";

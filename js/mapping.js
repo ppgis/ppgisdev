@@ -1,6 +1,7 @@
 //to remove markers maybe just set their arraypos to -1
 var allmarkers=[];
 var allmarkerids=[];
+var googlemarkers = [];//should really be an augmented object array integrated with allmarkers
 var nmarkers = 0;
 var currentmarker;
 var dx;
@@ -19,8 +20,16 @@ var currentID = 0;
 function myMap() {
     var mapCanvas = document.getElementById("map");
     var myCenter=new google.maps.LatLng(-27,153);
+    //todo get bounds
     var mapOptions = {center: myCenter, zoom: 10, fullscreenControl: false};
     map = new google.maps.Map(mapCanvas, mapOptions);
+    //todo have a loading warning
+    if (oldusericons != null){
+        for (var i=0;i<oldusericons.length;i++){
+            var tmplocation = new google.maps.LatLng(oldusericons[i].lat, oldusericons[i].lng);
+            placeMarker(tmplocation,oldusericons[i].url,oldusericons[i].iconID);
+        }
+    }
     //google.maps.event.addListener(map, 'click', function(event) {
       //  placeMarker( event.latLng);
     //});
@@ -30,9 +39,17 @@ function myMap() {
     //});
 }
 
-function placeMarker(location) {
+function placeMarker(location,theurl,theiconID) {
         //console.log("got one");
        // themarker.setPosition(location);
+        if (arguments.length == 1){
+            theanimation = google.maps.Animation.BOUNCE;
+        }
+        else {
+            theanimation = null;
+            currentmarker = theurl;
+            currentID = theiconID;
+        }
         nmarkers +=1;
         themarker = new google.maps.Marker({
             position: location,
@@ -40,21 +57,20 @@ function placeMarker(location) {
             icon: {
                 url: currentmarker
             },
-            animation: google.maps.Animation.BOUNCE,
+            animation: theanimation,
             iconID: currentID,
             nmarker: nmarkers
         });
+        googlemarkers.push(themarker);
         //check that it worked?
-        //TODO no more than 40 of one marker type
+        //TODO no more than 40 of one marker type?
         setTimeout(function(){ themarker.setAnimation(null); }, 750);
-        console.log(currentID);
-        console.log(themarker.iconID)
         //document.getElementById('theform').style.display = 'block';
         google.maps.event.addListener(themarker, 'rightclick', function () {
             alert('Marker right clicked'+this.iconID);
         });
         //add currentid to list of ids that are placed
-        markerstoredat = allmarkerids.indexOf(currentID);
+        markerstoredat = allmarkerids.indexOf(currentID);//use hasOwnProperty
         if (markerstoredat===-1) {
             allmarkerids.push(currentID);
             newmarkertype = {'type':currentID,'n': 1,'src':currentmarker,'lats':[location.lat()],
@@ -257,6 +273,9 @@ function removezeros(){
 function playjson(){
     //get rid of paths because they break the security settings
     //and remove the n=0 items if any
+    alert (googlemarkers[0].iconID);
+
+    /*
     removezeros();
     var themarker;
     for (i = 0; i < allmarkers.length; i++) {
@@ -264,8 +283,27 @@ function playjson(){
         themarker.src = themarker.src.replace(/.*\//, "");
     }
     var markersjson = JSON.stringify(allmarkers);
-    alert('markers are: '+markersjson);
+    //alert('markers are: '+markersjson);
     document.getElementById('markersjson').value = markersjson;
-    alert('markers in form are: '+document.getElementById('markersjson').value);
-    document.getElementById('markerForm').submit();
+    //alert('markers in form are: '+document.getElementById('markersjson').value);
+    document.getElementById('markerForm').submit(); */
+}
+
+// Not used : When the user clicks on <div>, open the popup
+function togglepopup() {
+   alert("This is a HELP message. I may put it in a file perhaps? \n Or should I pop up another tab on the browser?");
+}
+function gethelp(){
+    window.open("helpfile.pdf");
+}
+
+
+// Deletes all markers in the array by removing references to them.
+function deleteMarkers() {
+    for (var i = 0; i < allmarkers.length; i++) {
+        allmarkers[i].setMap(null);
+    }
+    allmarkers=[];
+    allmarkerids=[];
+    nmarkers = 0;
 }

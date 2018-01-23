@@ -14,7 +14,6 @@ $message = "";//will display on error page. anything in here will send us to the
 if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson']))){
     $savetype = test_input($_POST['savetype']);
     $table = "usericons";
-    $temptable = "tempusericons";
     $markersjson = test_json_input($_POST['markersjson']);
     $markers = json_decode($markersjson,true);
     //get dbuname from session
@@ -32,19 +31,11 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson']))){
                 $obj = mysqli_fetch_object($uname_found);
                 $uID = $obj->ID;
                 //remove everything from savedmarkers table for that uid
-                $sql = "DELETE from $temptable WHERE userID = $uID";
+                $sql = "DELETE from $table WHERE userID = $uID";
                 $deleted=mysqli_query($mysqli,$sql);
                 $nrows = $mysqli->affected_rows;
                 //echo ("So, $nrows rows deleted");
-                if ($savetype == "finalsave") {
-                    //also delete from proper table just in case
-                    $sql = "DELETE from $table WHERE userID = $uID";
-                }
-                    //TODO check that worked!
-                //now save eveything new
-                //hmmm
-                if ($savetype == "finalsave") $updatetable = $table;
-                else $updatetable = $temptable;
+                $updatetable = $table;
                 $colnames = array('userID', 'iconID', 'markerID','latitude','longitude');
                 foreach ($markers as $marker){
                       $iconID = $marker['type'];
@@ -61,7 +52,9 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson']))){
                           }
                       }
                 }
-
+                //update the user stage
+                $_SESSION['stageID'] = 4;//has saved some stuff
+                change_row($mysqli,'users',array('stageID'),array(4),'i','ID',$uID);
             }else{
                 $message = "User not found in database.";
             }
@@ -89,7 +82,7 @@ if ($message != "") {//we have to go somewhere else
 }
 else {
     if ($savetype == "finalsave") header("Location:exitsurvey.php");
-        else header("Location:map.php?message=success");
+        else header("Location:map.php?message=backfromsave");
 }
 
 //            newmarkertype = {'type':currentID,'n': 1,'src':currentmarker,'lats':[location.lat()],

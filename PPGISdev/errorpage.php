@@ -6,6 +6,7 @@ $requestType = $_SERVER['REQUEST_METHOD'];
 $message = "";
 $msgtype = 'default';
 
+
 switch ($requestType) {
     case 'GET':
         if (isset($_GET['message'])) $message = htmlspecialchars($_GET['message']);//clean it up

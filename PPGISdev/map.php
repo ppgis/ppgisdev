@@ -13,8 +13,10 @@ $testforguest = $config['testforguest'];
 $loggedin = false;
 
 $backfromsave = false;
+$backfromsurvey = false;
 if (($_SERVER['REQUEST_METHOD'] == 'GET') && (isset($_GET['message']))){
-    if (test_input($_GET['message'])=='success') $backfromsave = true;
+    if (test_input($_GET['message'])=='backfromsave') $backfromsave = true;
+    if (test_input($_GET['message'])=='backfromsurvey') $backfromsurvey = true;
 }
 
 $errorMessage = "";//will display on page
@@ -38,12 +40,12 @@ $loggedin = false;
 
 //already have a session?
 if (!empty($_SESSION['sessionuname'])){
+
     //this will automatically make the user confirm that they want to continue
     $sessionuname = $_SESSION['sessionuname'];
     $msgtype='nice';
     $loggedin = true;
     $dbuname = $_SESSION['dbuname'];
-    //TODO check that dbuname exists
     if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
     }
@@ -52,44 +54,65 @@ if (!empty($_SESSION['sessionuname'])){
     }
 }
 else{
-    $displayname = "not logged in";//TODO could just use an if statement in the HTML
+    $displayname = "not logged in";
     $sessionuname = "not logged in";
     //Alert and go back to home. There is a message there about needing to be logged in
     //should there be an alert?
-    phpAlertandgo("You need to log in or register to do mapping",'login');
+    $message = "You need to log in or register to do mapping";
+    phpAlertandgo($message,'login');
 }
 
 //got to here so we are doing mapping.
+$oldusericons = 'null';
 //open the database and find the icons
 $mysqli = new mysqli('localhost', $config['uname'], $config['password'], $config['dbname']);
 if ($mysqli) { //got database
-    //go get the image icons
-    $allmyicons = array();
-    $dummyIcon = new Icon(999,'','','');
-    $thestuff = $dummyIcon->dbnames;
-    $table = "mapicons";
-    $sql="SELECT $thestuff FROM $table";
-    $result=mysqli_query($mysqli,$sql);
-    //TODO check you got something!
-    //$result->num_rows
-    //I couldn't think of a smart way to do this
-    $nicons = 0;
-    $icondir = $config['icondir'];
-    while ($obj = mysqli_fetch_object($result)) {
-        $fulliconname = htmlspecialchars($_SERVER['DOCUMENT_ROOT']).$icondir.$obj->name.".png";
-        if (file_exists($fulliconname)) {
-            $allmyicons[$nicons++] = new Icon($obj->ID, $obj->name, $obj->altval, $obj->description);
+    $uname_found = check_exist($mysqli, 'users', 'uname', $dbuname, 's');
+    if ($uname_found->num_rows == 1) {
+        //if user found update stageID
+        if ($_SESSION['stageID'] < 3) $_SESSION['stageID'] = 3;
+        $obj = mysqli_fetch_object($uname_found);
+        $uID = $obj->ID;
+        if ($obj->stageID < 3) {
+            change_row($mysqli, 'users', array('stageID'), array(3), 'i', 'ID', $uID);
+        }//
+        //get the icons
+        $allmyicons = array();
+        $icontourl = [];//is this the same?
+        $dummyIcon = new Icon(999, '', '', '');
+        $thestuff = $dummyIcon->dbnames;
+        $table = "mapicons";
+        $sql = "SELECT $thestuff FROM $table";
+        $result = mysqli_query($mysqli, $sql);
+        //TODO check you got something!
+        //$result->num_rows
+        //I couldn't think of a smart way to do this
+        $nicons = 0;
+        $icondir = $config['icondir'];
+        while ($obj = mysqli_fetch_object($result)) {
+            $partialiconname = $icondir . $obj->name . ".png";
+            $fulliconname = htmlspecialchars($_SERVER['DOCUMENT_ROOT']) . $partialiconname;
+            if (file_exists($fulliconname)) {
+                $allmyicons[$nicons++] = new Icon($obj->ID, $obj->name, $obj->altval, $obj->description);
+                $icontourl[$obj->ID] = $partialiconname;
+            } else {
+                $message .= "<br>Missing file " . $fulliconname;
+            }
         }
-        else {
-            $message .= "<br>Missing file ".$fulliconname;
-        }
+        //the user may have icons saved in either the temp or the permanent table
+        $oldusericons = getusericons($mysqli, $uID, $icontourl);
+        $nicons = sizeof($oldusericons);
+        //
+
+    } else {
+        $message .= "Couldn't find user in database. " . $config['syserror'];
     }
+    // now load up anything that was saved
     // Free result set
     mysqli_free_result($result);
     //close connection
     mysqli_close($con);
-}
-else{ //couldn't connect to db
+} else { //couldn't connect to db
     $message = "Database Connect error.<br>" . $config['syserror'];
 }
 
@@ -103,19 +126,20 @@ if ($message != "") {//we have to go somewhere else
 <!DOCTYPE html>
 <html>
 <head>
-    <?php doheadermin($pagetitle) ?>
+    <?php doheader2($pagetitle) ?>
     <script type="text/javascript" src="/js/mapping.js"></script>
 </head>
+<body>
 <?php
-   if ($backfromsave){
-       echo "<body onload=\"alert('A draft of your map has been saved.')\">";
-   }
-   else echo "<body>";
+echo '<script type="text/javascript">';
+if ($backfromsave){
+    echo "alert('A draft of your map has been saved.');";
+}
+echo "var oldusericons = $oldusericons;";
+echo "</script>";
 ?>
 <?php dotopbit2($loggedin,$displayname) ?>
-<!--script>
-document.addEventListener("dragover", function( event ) {ecx = event.clientX;ecy = event.clientY}, false);
-</script-->
+
 <span ondragover="getcoords(event)">
     <div style="padding: 0px 10px ;">
         <?php //place the icons
@@ -128,24 +152,25 @@ document.addEventListener("dragover", function( event ) {ecx = event.clientX;ecy
 title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondragend='dropmarker()' id='$anicon->iconID'>
 ";
         }?>
-        <!--img class="icon2" src="/images/icons/home.png"  draggable="true" ondragstart="changeicon(this,event)" ondragend="dropmarker()" id="icon1">
-        <img class="icon2" src="/images/icons/bank.png" onclick="changeicon(this)">
-        <img class="icon2" src="/images/icons/icon1s.png" onclick="changeicon(this)">
-        img class="icon" src="/images/icons/airport.svg" width="20px"-->
     </div>
+
 
 <div style="position: relative;width: 100%">
 
 
     <div class="mappy2" id="map"></div>
-    <div class="LHS" id="LHSbig" style="display: none;">
-        Some stuff that is hidden initially. May need a max width
-        <div class="arrowleft"><img src="arrowin.png" onclick="hideele('LHS')"/></div>
+    <!--LHS popout section follows-->
+    <div class="LHS" id="LHSbig" style="display: block;">
+        <p><img src="/images/icons/help.svg" width="32 px" title="Help" onclick="gethelp()" class="box"><br>Help</p>
+         <img  src="/images/icons/draft.svg" width="32 px" title="Save Draft" onclick="playjson();"><figcaption>Save Draft</figcaption><br>
+         <img src="/images/icons/check-form.svg" height="32 px" width="32 px" title="Finished: Save and Submit"><figcaption>Submit</figcaption><br>
+         <img src="/images/icons/delete.svg" title="Remove all markers" height="32 px" width="32 px"><figcaption>Remove all</figcaption><br>
+        <div class="arrowleft"><img src="arrowin.png" onclick="hideele('LHS')" style="display: block;"/></div>
     </div>
-    <div class="LHS" id="LHSsmall" display = "block">
-    <div class="arrowleft"><img src="arrowout.png" onclick="unhideele('LHS')"/></div>
+    <div class="LHS" id="LHSsmall" style="display: none;">
+    <div class="arrowleft"><img src="arrowout.png" onclick="unhideele('LHS')" style="display: block;"/></div>
         </div>
-    <!--RHS-->
+    <!--RHS popout section follows-->
     <div class="RHS" id="RHSbig" style="display: none;">
         <button onclick="playjson()">Click</button>
       Markers Placed:
@@ -184,7 +209,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
        <form id="markerForm" name="markerForm" method="post" action="savemap.php">
 					<input type="hidden" name="markersjson" id="markersjson" value="">
            <input type="hidden" name="savetype" id="savetype" value="temp">
-					<button class="lat-long" id="submitmarkers" onclick="playjson();">Submit</button>
+					<button class="lat-long" id="submitmarkers" >Submit</button>
        </form>
     <!--/div-->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap"></script>

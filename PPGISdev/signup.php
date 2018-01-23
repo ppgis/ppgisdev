@@ -13,6 +13,7 @@ $errorMessage = "";//will display on page
 $msgtype='bad';
 $message = "";//will display on error page
 
+
 session_start();
 //were to go back to after login?
 $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
@@ -85,7 +86,7 @@ else {
                 } else {
                     $phash = password_hash($pword, PASSWORD_DEFAULT);
                     $colnames = array('uname', 'password', 'email','stageID');
-                    $values = array($uname, $phash, $email,1);//status 1 for registered user
+                    $values = array($uname, $phash, $email,1);//stageID 1 for registered user
                     $valuetypes = 'sssi';
                     $retval = insert_row($mysqli, $table, $colnames, $values, $valuetypes);
 
@@ -110,7 +111,8 @@ else {
 if ($message != "") {//we have to go somewhere else
 //if login worked
     if ($message === $goodlogin) {
-        //this was done at the top of the php//session_start();
+        //successful signup
+        $_SESSION['stage'] = '1';//registered as a user
         $_SESSION['login'] = "1";
         $_SESSION['sessionuname'] = $sessionuname;
         $_SESSION['isguest'] = '0';
