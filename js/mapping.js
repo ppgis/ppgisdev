@@ -14,6 +14,9 @@ var rhshidden = true;
 var ecx = 0;
 var ecy = 0;
 var currentID = 0;
+var swbound;
+var nebound;
+var bclistener;
 
 function myMap() {
     var mapCanvas = document.getElementById("map");
@@ -23,23 +26,39 @@ function myMap() {
     map = new google.maps.Map(mapCanvas, mapOptions);
     //todo have a loading warning
     if (oldusericons != null){
+        var minlat = oldusericons[0].lat;
+        var maxlat = oldusericons[0].lat;
+        var minlong = oldusericons[0].lng;
+        var maxlong = oldusericons[0].lng;
         for (var i=0;i<oldusericons.length;i++){
+            thelat = oldusericons[i].lat;
+            thelong = oldusericons[i].lng;
             var tmplocation = new google.maps.LatLng(oldusericons[i].lat, oldusericons[i].lng);
             placeMarker(tmplocation,oldusericons[i].url,oldusericons[i].iconID);
+            if (thelat > maxlat) maxlat = thelat;
+            if (thelat < minlat) minlat = thelat;
+            if (thelong > maxlong) maxlong = thelong;
+            if (thelong < minlong) minlong = thelong;
         }
+        //make sure you can see those!
+        swbound = new google.maps.LatLng(minlat,minlong);
+        nebound = new google.maps.LatLng(maxlat,maxlong);
+        bclistener = google.maps.event.addListener(map, 'bounds_changed', function() {
+           // alert(swbound);
+           mapbounds = map.getBounds();
+           if ((!mapbounds.contains(swbound)) | (!mapbounds.contains(nebound))){
+               mapbounds.extend(swbound);
+               mapbounds.extend(nebound);
+               map.fitBounds(mapbounds);
+           }
+           bclistener.remove();
+        });
     }
-    //google.maps.event.addListener(map, 'click', function(event) {
-      //  placeMarker( event.latLng);
-    //});
-    //might need this if bounds checks stop working
-     //google.maps.event.addListener(map, 'bounds_changed', function() {
-     //   mapbounds = map.getBounds();
-    //});
+
 }
 
 function placeMarker(location,theurl,theiconID) {
-        //console.log("got one");
-       // themarker.setPosition(location);
+
         if (arguments.length == 1){
             theanimation = google.maps.Animation.BOUNCE;
         }

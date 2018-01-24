@@ -111,6 +111,7 @@ if ($mysqli) { //got database
         //the user may have icons saved in either the temp or the permanent table
         $oldusericons = getusericons($mysqli, $uID, $icontourl);
         $nicons = sizeof($oldusericons);
+        if ($nicons == 0) $oldusericons = null;
         //
 
     } else {
@@ -192,9 +193,9 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
         <div class="arrowright"><img src="arrowin.png" title="list your markers" onclick="unhideele('RHS')"/></div>
     </div>
 
-        <div class="mapcontainer" style="position: relative;display:table-cell;">
+        <!--div class="mapcontainer" style="position: relative;display:table-cell;">
 
-        </div>
+        </div-->
        <form id="markerForm" name="markerForm" method="post" action="savemap.php">
 					<input type="hidden" name="markersjson" id="markersjson" value="">
            <input type="hidden" name="savetype" id="savetype" value="">
