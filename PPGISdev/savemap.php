@@ -11,7 +11,7 @@ $msgtype='bad';
 $message = "";//will display on error page. anything in here will send us to the error page
 
 
-if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson']))){
+if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson'])) && (isset($_POST['savetype']))){
     $savetype = test_input($_POST['savetype']);
     $table = "usericons";
     $markersjson = test_json_input($_POST['markersjson']);
@@ -36,16 +36,16 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson']))){
                 $nrows = $mysqli->affected_rows;
                 //echo ("So, $nrows rows deleted");
                 $updatetable = $table;
-                $colnames = array('userID', 'iconID', 'markerID','latitude','longitude');
-                foreach ($markers as $marker){
-                      $iconID = $marker['type'];
+                $colnames = array('userID', 'iconID','latitude','longitude');
+                foreach ($markers as $iconID=>$marker){
+                      //$iconID = $marker['type'];
+                      //echo($iconID);var_dump($marker);
                       $lats = $marker['lats'];
                       //var_dump($marker['lats']);ee("lats");
                       $longs = $marker['longs'];
-                      $markerids = $marker[nmarker];
-                      for ($i = 0;$i < $marker['n'];$i++){
-                          $values = array($uID, (int)$iconID, (int)$markerids[$i],(double)$lats[$i],(double)$longs[$i]);
-                          $valuetypes = 'iiidd';
+                      for ($i = 0;$i < sizeof($lats);$i++){
+                          $values = array($uID, (int)$iconID,(double)$lats[$i],(double)$longs[$i]);
+                          $valuetypes = 'iidd';
                           $retval = insert_row($mysqli, $updatetable, $colnames, $values, $valuetypes);
                           if (preg_match("/^error/", $retval)) {
                               $message .= $retval;
@@ -81,7 +81,7 @@ if ($message != "") {//we have to go somewhere else
     header($errorPageMessage);
 }
 else {
-    if ($savetype == "finalsave") header("Location:exitsurvey.php");
+    if ($savetype == "final") header("Location:exitsurvey.php");
         else header("Location:map.php?message=backfromsave");
 }
 

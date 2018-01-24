@@ -1,7 +1,5 @@
 //to remove markers maybe just set their arraypos to -1
-var allmarkers=[];
-var allmarkerids=[];
-var googlemarkers = [];//should really be an augmented object array integrated with allmarkers
+var googlemarkers = {};
 var nmarkers = 0;
 var currentmarker;
 var dx;
@@ -51,42 +49,31 @@ function placeMarker(location,theurl,theiconID) {
             currentID = theiconID;
         }
         nmarkers +=1;
-        themarker = new google.maps.Marker({
+        var themarker = new google.maps.Marker({
             position: location,
             map: map,
             icon: {
                 url: currentmarker
             },
+            draggable: true,
             animation: theanimation,
             iconID: currentID,
             nmarker: nmarkers
         });
-        googlemarkers.push(themarker);
+        googlemarkers[nmarkers] = themarker;
         //check that it worked?
         //TODO no more than 40 of one marker type?
         setTimeout(function(){ themarker.setAnimation(null); }, 750);
         //document.getElementById('theform').style.display = 'block';
-        google.maps.event.addListener(themarker, 'rightclick', function () {
-            alert('Marker right clicked'+this.iconID);
+        themarker.addListener('dblclick', function removeme() {
+            markerID = themarker.nmarker;
+            googlemarkers[markerID].setMap(null);
+            delete googlemarkers[markerID];
+            if (document.getElementById('RHSbig').style.display=='block') anotherline();
         });
-        //add currentid to list of ids that are placed
-        markerstoredat = allmarkerids.indexOf(currentID);//use hasOwnProperty
-        if (markerstoredat===-1) {
-            allmarkerids.push(currentID);
-            newmarkertype = {'type':currentID,'n': 1,'src':currentmarker,'lats':[location.lat()],
-                'longs':[location.lng()],'nmarker':[nmarkers]};
-            allmarkers.push(newmarkertype);
-        }
-        else {//retrieve and update
-            oldmarkertype = allmarkers[markerstoredat];
-            oldmarkertype.n += 1;
-            oldmarkertype.lats.push(location.lat());
-            oldmarkertype.longs.push(location.lng());
-            oldmarkertype.nmarker.push(nmarkers);//ids of these markers
-        }
-        //allmarkers.push(themarker);
-    //document.getElementById("latbox").innerHTML = location.lat().toFixed(6);
-    //document.getElementById("lonbox").innerHTML = location.lng().toFixed(6);
+        themarker.addListener('position_changed',function(){
+            if (document.getElementById('RHSbig').style.display=='block') anotherline();
+        });
 }
 
 
@@ -111,6 +98,28 @@ function dropmarker(){
     }
 
 }
+
+function makemarkerlist(){
+    //add currentid to list of ids that are placed
+    var allmarkers = {};
+    var theiconID;
+    for (var markernum in googlemarkers){
+        themarker = googlemarkers[markernum];
+        theiconID = themarker.iconID;
+        if (allmarkers.hasOwnProperty(theiconID)){//already one
+            allmarkers[theiconID].lats.push(themarker.position.lat());
+            allmarkers[theiconID].longs.push(themarker.position.lng());
+        }
+        else { //new element
+            newmarker = {'src':themarker.icon.url,'lats':[themarker.position.lat()],
+                'longs':[themarker.position.lng()]};
+            allmarkers[theiconID] = newmarker;
+        }
+    }
+    return allmarkers;
+}
+
+//where am i
 function getcoords(e){
     ecx = e.clientX;
     ecy = e.clientY;
@@ -214,12 +223,13 @@ function anotherline() {
     var classname = 'rTC';
     var iconlist = document.getElementById('iconlist');
     iconlist.innerHTML = "";
-    var markertoadd;
-    for (i = 0; i < allmarkers.length; i++) {
-        markertoadd = allmarkers[i];
-        //TODO describe marker class
-        //add the number of icons
-        makeappendspantext(iconlist,markertoadd.n,'rTCn');
+    var markertoadd,n,j;
+    allmarkers = makemarkerlist();//make var
+    for (var iconID in allmarkers) {
+        markertoadd = allmarkers[iconID];
+        //how many of them?
+        nlatlngs = markertoadd.lats.length;
+        makeappendspantext(iconlist,nlatlngs,'rTCn');
         //add the images source//TODO cut this down
         var newdiv = document.createElement('span');
         newdiv.className=classname;
@@ -227,7 +237,6 @@ function anotherline() {
         myImage.src = markertoadd.src;
         newdiv.appendChild(myImage);
         iconlist.appendChild(newdiv);
-        var nlatlngs = markertoadd.lats.length;
         j = 0;
         makeappendspantext(iconlist,markertoadd.lats[j].toFixed(2), classname);
         makeappendtext(iconlist, ',', classname);
@@ -246,6 +255,7 @@ function anotherline() {
         makeappend(iconlist,'br');
     }
 }
+
 function makeappend(theparent,childtype){
     var newele = document.createElement(childtype);
     theparent.appendChild(newele);
@@ -261,32 +271,20 @@ function makeappendtext(theparent,childcontents){
     var newchild = document.createTextNode(childcontents);
     theparent.appendChild(newchild);
 }
-function removezeros(){
-    var zeros = [];
-    for (i = 0; i < allmarkers.length; i++) {
-        if ((themarker.n)==0) zeros.push(i);
-    }
-    for (i=0;i<zeros.length;i++){
-        allmarkers.splice(zeros[i],1);
-    }
-}
-function playjson(){
+function submitjson(savetype){
     //get rid of paths because they break the security settings
-    //and remove the n=0 items if any
-    alert (googlemarkers[0].iconID);
-
-    /*
-    removezeros();
-    var themarker;
-    for (i = 0; i < allmarkers.length; i++) {
-        themarker = allmarkers[i];
+    var themarker,allmarkers = makemarkerlist();
+    //console.log(allmarkers);
+    for (var theiconID in allmarkers) {
+        themarker = allmarkers[theiconID];
         themarker.src = themarker.src.replace(/.*\//, "");
     }
     var markersjson = JSON.stringify(allmarkers);
     //alert('markers are: '+markersjson);
     document.getElementById('markersjson').value = markersjson;
+    document.getElementById('savetype').value = savetype;
     //alert('markers in form are: '+document.getElementById('markersjson').value);
-    document.getElementById('markerForm').submit(); */
+    document.getElementById('markerForm').submit();
 }
 
 // Not used : When the user clicks on <div>, open the popup
@@ -299,11 +297,10 @@ function gethelp(){
 
 
 // Deletes all markers in the array by removing references to them.
-function deleteMarkers() {
-    for (var i = 0; i < allmarkers.length; i++) {
-        allmarkers[i].setMap(null);
+function removeall() {
+    for (var markerID in googlemarkers){
+        googlemarkers[markerID].setMap(null);
+        delete googlemarkers[markerID];
     }
-    allmarkers=[];
-    allmarkerids=[];
-    nmarkers = 0;
+    if (document.getElementById('RHSbig').style.display==='block') anotherline();
 }

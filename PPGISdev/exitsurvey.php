@@ -50,14 +50,7 @@ else{
     phpAlertandgo("You need to log in or register to do mapping",'login');
 }
 
-if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson']))){
-    $dbuname = test_input($_POST['dbuname']);
-    $markersjson = test_json_input($_POST['markersjson']);
-    $markers = json_decode($markersjson,true);
-}
-else {
-    $message = "No data was received.";
-}
+
 
 //are we continuing or did it break?
 if ($message != "") {//we have to go somewhere else
@@ -73,28 +66,10 @@ if ($message != "") {//we have to go somewhere else
 <!DOCTYPE html>
 <html>
 
-<?php doheader($pagetitle) ?>
+<?php doheader2($pagetitle) ?>
 <body>
 <?php dotopbit2($loggedin,$displayname) ?>
 
-<?php var_dump($markers);echo("<br>");
-foreach ($markers as $themarker){
-
-ech('type',$themarker['type']);
-ech('n',$themarker['n']);
-ech('src',$themarker['src']);
-for ($i=0;$i<$themarker['n'];$i++){
-    echo $themarker['nmarker'][$i],$themarker['lats'][$i].", ".$themarker['longs'][$i]."<br>";
-}
-}
-
-function ech($str,$input){
-    echo $str." = ".$input;
-    echo "<br>";
-}
-
-
-echo"<br>the end"; ?>
 
 <!--?php echo "debug values: <br>session status is ".session_status()."<br>";
 echo "session name is ".session_name()."<br>";

@@ -69,10 +69,19 @@ $mysqli = new mysqli('localhost', $config['uname'], $config['password'], $config
 if ($mysqli) { //got database
     $uname_found = check_exist($mysqli, 'users', 'uname', $dbuname, 's');
     if ($uname_found->num_rows == 1) {
-        //if user found update stageID
-        if ($_SESSION['stageID'] < 3) $_SESSION['stageID'] = 3;
         $obj = mysqli_fetch_object($uname_found);
         $uID = $obj->ID;
+        $userstage = $obj->stageID;
+        //if user found update stageID
+        if ($userstage < 3) {
+            $userstage = 3;
+            change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
+        }
+        elseif ($userstage > 3) {
+            $hassaved = true;
+        }
+        $_SESSION['stageID'] = $userstage;
+
         if ($obj->stageID < 3) {
             change_row($mysqli, 'users', array('stageID'), array(3), 'i', 'ID', $uID);
         }//
@@ -132,8 +141,11 @@ if ($message != "") {//we have to go somewhere else
 <body>
 <?php
 echo '<script type="text/javascript">';
-if ($backfromsave){
+if (($backfromsave) & ($nicons > 0)){
     echo "alert('A draft of your map has been saved.');";
+}
+elseif (($hassaved) & ($nicons > 0)){
+    echo "alert('Loading saved markers.');";
 }
 echo "var oldusericons = $oldusericons;";
 echo "</script>";
@@ -161,10 +173,10 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
     <div class="mappy2" id="map"></div>
     <!--LHS popout section follows-->
     <div class="LHS" id="LHSbig" style="display: block;">
-        <p><img src="/images/icons/help.svg" width="32 px" title="Help" onclick="gethelp()" class="box"><br>Help</p>
-         <img  src="/images/icons/draft.svg" width="32 px" title="Save Draft" onclick="playjson();"><figcaption>Save Draft</figcaption><br>
-         <img src="/images/icons/check-form.svg" height="32 px" width="32 px" title="Finished: Save and Submit"><figcaption>Submit</figcaption><br>
-         <img src="/images/icons/delete.svg" title="Remove all markers" height="32 px" width="32 px"><figcaption>Remove all</figcaption><br>
+       <img src="/images/icons/help.svg" width="32 px" title="Help" onclick="gethelp()" class="box"><br>
+         <img  src="/images/icons/draft.svg" width="32 px" title="Save Draft" onclick="submitjson('temp');" class="box"><br>
+         <img src="/images/icons/check-form.svg" height="32 px" width="32 px" title="Finished: Save and Submit" onclick="submitjson('final');" class="box"><br>
+         <img src="/images/icons/delete.svg" title="Remove all markers" height="32 px" width="32 px" onclick="removeall()" class="box"><br>
         <div class="arrowleft"><img src="arrowin.png" onclick="hideele('LHS')" style="display: block;"/></div>
     </div>
     <div class="LHS" id="LHSsmall" style="display: none;">
@@ -172,7 +184,6 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
         </div>
     <!--RHS popout section follows-->
     <div class="RHS" id="RHSbig" style="display: none;">
-        <button onclick="playjson()">Click</button>
       Markers Placed:
         <div class="rT" id="iconlist"></div>
         <div class="arrowright"><img src="arrowout.png"  title="close list" onclick="hideele('RHS')"/></div>
@@ -181,35 +192,12 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
         <div class="arrowright"><img src="arrowin.png" title="list your markers" onclick="unhideele('RHS')"/></div>
     </div>
 
-    <!--div class="mapcontentcontainer"-->
-    <!--div style="display: table-row">
-        <div-- class="mapdialogue">
-            <h3>Click on the Map<h3>
-                    <div id="theform">
-                        <div class="lat-long" id="latbox">
-                            Latitude
-                        </div>
-                        <br>
-                        <div class="lat-long" id="lonbox">
-                            Longitude
-                        </div>
-                        <br><br>
-                        <form id="sampleForm" name="sampleForm" method="post" action="phpscript.php">
-                            <input type="hidden" name="lat" id="lat" value="10">
-                            <input type="hidden" name="lon" id="lon" value="10">
-                            <button class="lat-long" id="asubmit" onclick="setValue();">Submit</button>
-                        </form>
-                    </div>
-
-        </div-->
-    <!--div class="spacy">&nbsp;</div-->
         <div class="mapcontainer" style="position: relative;display:table-cell;">
 
         </div>
        <form id="markerForm" name="markerForm" method="post" action="savemap.php">
 					<input type="hidden" name="markersjson" id="markersjson" value="">
-           <input type="hidden" name="savetype" id="savetype" value="temp">
-					<button class="lat-long" id="submitmarkers" >Submit</button>
+           <input type="hidden" name="savetype" id="savetype" value="">
        </form>
     <!--/div-->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap"></script>
