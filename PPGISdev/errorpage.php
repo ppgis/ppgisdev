@@ -19,7 +19,15 @@ switch ($requestType) {
 
 $loggedin = false;
 session_start();
-if (!empty($_SESSION['sessionuname'])) $loggedin = true;
+if (!empty($_SESSION['sessionuname'])) {
+    $loggedin = true;
+    $displayname = $_SESSION['sessionuname'];
+}
+else {
+    $displayname = 'not logged in';
+}
+
+/*beth old if (!empty($_SESSION['sessionuname'])) $loggedin = true;
 if ($loggedin){
     if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
@@ -30,7 +38,7 @@ if ($loggedin){
 }
 else{
     $displayname = 'not logged in';
-}
+}*/
 
 
 switch ($msgtype){

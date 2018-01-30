@@ -13,6 +13,8 @@ $message = "";//will display on error page. anything in here will send us to the
 
 if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson'])) && (isset($_POST['savetype']))){
     $savetype = test_input($_POST['savetype']);
+    //what is the min stage at this point?
+    $minstage = ($savetype=="final") ? PPGIS_stage_finmapping: PPGIS_stage_hasdraft;
     $table = "usericons";
     $markersjson = test_json_input($_POST['markersjson']);
     $markers = json_decode($markersjson,true);
@@ -30,6 +32,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson'])) && 
                 //get user ID
                 $obj = mysqli_fetch_object($uname_found);
                 $uID = $obj->ID;
+                $userstage = $obj->stageID;
                 //remove everything from savedmarkers table for that uid
                 $sql = "DELETE from $table WHERE userID = $uID";
                 $deleted=mysqli_query($mysqli,$sql);
@@ -53,8 +56,13 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson'])) && 
                       }
                 }
                 //update the user stage
-                $_SESSION['stageID'] = 4;//has saved some stuff
-                change_row($mysqli,'users',array('stageID'),array(4),'i','ID',$uID);
+                if ($userstage < $minstage){
+                    $userstage = $minstage;
+                    change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
+                }
+                //make sure the session knows which stage  it is at
+                $_SESSION['stageID'] = $userstage;
+
             }else{
                 $message = "User not found in database.";
             }

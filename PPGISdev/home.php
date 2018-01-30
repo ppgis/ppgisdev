@@ -14,7 +14,15 @@ session_start();
 //have we somewhere to go back to like mapping etc?
 if ( empty($_SESSION['comebackto'])) $_SESSION['comebackto'] = 'home.php';
 
-if (!empty($_SESSION['sessionuname'])) $loggedin = true;
+if (!empty($_SESSION['sessionuname'])) {
+    $loggedin = true;
+    $displayname = $_SESSION['sessionuname'];
+}
+else {
+    $displayname = 'not logged in';
+}
+
+/*beth old if (!empty($_SESSION['sessionuname'])) $loggedin = true;
 if ($loggedin){
     if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
@@ -25,7 +33,7 @@ if ($loggedin){
 }
 else{
     $displayname = 'not logged in';
-}
+}*/
 
 ?>
 <!DOCTYPE html>

@@ -1,10 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: beth
- * Date: 18/12/17
- * Time: 8:43 AM
+/*
+some global constants
  */
+define("PPGIS_stage_guest", 0);
+define("PPGIS_stage_user", 1);
+define("PPGIS_stage_startmapping", 2);
+define("PPGIS_stage_hasdraft", 3);
+define("PPGIS_stage_finmapping", 4);
+define("PPGIS_stage_startsurvey", 5);
+define("PPGIS_stage_finsurvey", 6);
+define("PPGIS_guestDisplayName", "Guest");
+
+
 function send_html_mail($to,$from,$subject,$message){
 
     $headers  = "From: $from\r\n";

@@ -40,12 +40,13 @@ if (!empty($_SESSION['sessionuname'])){
     $msgtype='nice';
     $loggedin = true;
     $dbuname = $_SESSION['dbuname'];
-    if ($_SESSION['isguest']=='true'){
+    $displayname = $sessionuname;//not sure why I have both!
+    /*beth old if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
     }
     else {
         $displayname = $sessionuname;
-    }
+    }*/
 }
 else{
     $displayname = "not logged in";
@@ -67,18 +68,13 @@ if ($mysqli) { //got database
         $uID = $obj->ID;
         $userstage = $obj->stageID;
         //if user found update stageID
-        if ($userstage < 3) {
-            $userstage = 3;
+        if ($userstage < PPGIS_stage_startsurvey) {
+            $userstage = PPGIS_stage_startsurvey;
             change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
         }
-        elseif ($userstage > 3) {
-            $hassaved = true;
-        }
         $_SESSION['stageID'] = $userstage;
+        //should we check whether the user has finished the survey?
 
-        if ($obj->stageID < 3) {
-            change_row($mysqli, 'users', array('stageID'), array(3), 'i', 'ID', $uID);
-        }//
         //get the icons
         $allmyicons = array();
         $icontourl = [];//is this the same?
@@ -139,12 +135,30 @@ echo "var oldusericons = $oldusericons;";
 echo "</script>";
 ?>
 <?php dotopbit2($loggedin,$displayname) ?>
-<div style="position: relative;width: 100%;">
 
+    <div class="surveycontainer">
+        <div class="mappysmall" id="map"></div>
+        <div class="surveydialogue">
+            <h2>Exit Survey</h2>
+                <form class="surveyform">
+                    <label>
+                        <span>Your home address?</span>
+                    <input id="input1" type="text" placeholder="Home address">
+                    </label>
+                    <label>
+                        <span>Q2</span>
+                        <input id="input2" type="text">
+                    </label>
+                    <label>
+                        <span>Q3</span>
+                        <input id="input3" type="text">
+                    </label>
+                </form>
 
-    <div class="mappysmall" id="map"></div>
-    <div style="width: 200px;min-width:200px;margin: 20px;z-index: 1;">The survey will be here and also a map of what the user has done.</div>
-</div>
+        </div>
+
+    </div>
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap"></script>
 <!--?php echo "debug values: <br>session status is ".session_status()."<br>";
 echo "session name is ".session_name()."<br>";

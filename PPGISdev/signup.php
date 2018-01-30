@@ -28,12 +28,13 @@ if (!empty($_SESSION['sessionuname'])){
     $msgtype='nice';
     $loggedin = true;
     $backhere = 'signup.php';
-    if ($_SESSION['isguest']=='true'){
+    $displayname = $sessionuname;
+    /*beth old if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
     }
     else {
         $displayname = $sessionuname;
-    }
+    }*/
 }
 else {
     $displayname = "not logged in";
@@ -115,7 +116,8 @@ if ($message != "") {//we have to go somewhere else
         $_SESSION['stage'] = '1';//registered as a user
         $_SESSION['login'] = "1";
         $_SESSION['sessionuname'] = $sessionuname;
-        $_SESSION['isguest'] = '0';
+        $_SESSION['dbuname'] = $sessionuname;
+        /*beth old $_SESSION['isguest'] = '0'; */
         header($phpgotonext);
     } else {
 //if something bad happened

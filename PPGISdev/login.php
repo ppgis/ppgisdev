@@ -13,7 +13,9 @@ $errorMessage = "";//will display on page
 $msgtype='bad';
 $message = "";//will display on error page
 $backhere = 'login.php';//in case we need to logout and come back here
-$isguest = '0';
+/*beth old $isguest = '0';//whether this user is a guest or not*/
+$loggedin = false;
+$testforguest = $config['testforguest'];
 
 $uname = "";
 $pword = "";
@@ -28,9 +30,7 @@ session_start();
 $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
 
-$loggedin = false;
 
-$testforguest = $config['testforguest'];
 
 
 //already have a session?
@@ -40,21 +40,22 @@ if (!empty($_SESSION['sessionuname'])){
     $sessionuname = $_SESSION['sessionuname'];
     $msgtype='nice';
     $loggedin = true;
-    if ($_SESSION['isguest']=='true'){
+    $displayname = $_SESSION['sessionuname'];
+/*beth old    if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
     }
     else {
         $displayname = $_SESSION['sessionuname'];
     }
-
+*/
 }
-else {
+else {//there is no session yet
     $displayname = "not logged in";
     $sessionuname = "not logged in";
     $isaguest = false;
     $badguest = true;
 
-    //are we trying to be a guest? Could come from post or get
+    //did they click continue as guest? (Could come from post or get)
     if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['guesty']))){
         $isaguest = true;
         if (test_input($_POST['guesty'])===$testforguest){
@@ -99,16 +100,16 @@ else {
                         if (preg_match("/^error/", $retval)) {
                             $errorMessage = $retval;
                         } else {
-                            $isguest = '1';
-                            $sessionuname = 'Guest';
+                            /*beth old $isguest = '1';*/
+                            $sessionuname = PPGIS_guestDisplayName;//'Guest';
                             $dbuname = $uname;
                             $message = $goodlogin;
                             $userstage = '0';
                         }
 
                     } else {//must have found this guest but we will let them continue
-                        $isguest = '1';
-                        $sessionuname = 'Guest';
+                        /*beth old $isguest = '1'; */
+                        $sessionuname = PPGIS_guestDisplayName;//'Guest';
                         $dbuname = $uname;
                         $message = $goodlogin;
                         $userstage = '0';
@@ -140,7 +141,7 @@ else {
                     $db_field = $user_found->fetch_assoc();//get the row values into an associative array
                     if (password_verify($pword, $db_field['password'])) {
                         $message = $goodlogin;
-                        $isguest = '0';
+                        /*beth old $isguest = '0';*/
                         $sessionuname = $uname;
                         $dbuname = $uname;
                         $userstage = $db_field['stageID'];
@@ -172,7 +173,7 @@ if ($message != "") {//we have to go somewhere else
         $_SESSION['login'] = "1";
         $_SESSION['sessionuname'] = $sessionuname;
         $_SESSION['dbuname'] = $dbuname;
-        $_SESSION['isguest'] = $isguest;
+        /*beth old $_SESSION['isguest'] = $isguest;*/
         $_SESSION['userstage'] = $userstage;
         header($phpgotonext);
     } else {

@@ -77,15 +77,16 @@ function placeMarker(location,theurl,theiconID) {
             draggable: true,
             animation: theanimation,
             iconID: currentID,
-            nmarker: nmarkers
+            nmarker: nmarkers,
+            title: 'Double-click to remove',
         });
         googlemarkers[nmarkers] = themarker;
         //check that it worked?
         //TODO no more than 40 of one marker type?
         setTimeout(function(){ themarker.setAnimation(null); }, 750);
         //document.getElementById('theform').style.display = 'block';
-        themarker.addListener('dblclick', function removeme() {
-            markerID = themarker.nmarker;
+        themarker.addListener('dblclick', function() {
+            markerID = this.nmarker;
             googlemarkers[markerID].setMap(null);
             delete googlemarkers[markerID];
             if (document.getElementById('RHSbig').style.display=='block') anotherline();

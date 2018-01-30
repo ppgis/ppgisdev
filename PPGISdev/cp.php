@@ -25,9 +25,16 @@ session_start();
 $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
 
-if (!empty($_SESSION['sessionuname'])) $loggedin = true;
-if ($loggedin){
-    if ($_SESSION['isguest']=='true'){
+if (!empty($_SESSION['sessionuname'])) {
+    $loggedin = true;
+    $displayname = $_SESSION['sessionuname'];
+}
+else {
+    $displayname = 'not logged in';
+}
+/*beth old if ($loggedin){
+    $displayname = $_SESSION['sessionuname'];
+   if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
     }
     else {
@@ -36,7 +43,7 @@ if ($loggedin){
 }
 else{
     $displayname = 'not logged in';
-}
+}*/
 
 
 $msgtype='bad';
@@ -176,7 +183,7 @@ if ($message !="") {
         $_SESSION['sessionuname'] = $uname;
         $_SESSION['dbuname'] = $uname;
         //not a guest after signup!!!
-        $_SESSION['isguest'] = '0';
+        /*beth old $_SESSION['isguest'] = '0';*/
         header($phpgotonext);
     } else {
         $errorMessage = "Location: errorpage.php?message=" . $message . "&msgtype=" . $msgtype;

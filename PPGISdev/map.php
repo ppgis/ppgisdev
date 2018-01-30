@@ -46,12 +46,13 @@ if (!empty($_SESSION['sessionuname'])){
     $msgtype='nice';
     $loggedin = true;
     $dbuname = $_SESSION['dbuname'];
-    if ($_SESSION['isguest']=='true'){
+    $displayname = $sessionuname;
+    /*beth old if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
     }
     else {
         $displayname = $sessionuname;
-    }
+    }*/
 }
 else{
     $displayname = "not logged in";
@@ -72,19 +73,17 @@ if ($mysqli) { //got database
         $obj = mysqli_fetch_object($uname_found);
         $uID = $obj->ID;
         $userstage = $obj->stageID;
-        //if user found update stageID
-        if ($userstage < 3) {
-            $userstage = 3;
+        //if user found, update stageID
+        if ($userstage < PPGIS_stage_startmapping){
+            $userstage = PPGIS_stage_startmapping;
             change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
         }
-        elseif ($userstage > 3) {
+        elseif ($userstage > PPGIS_stage_startmapping) {
             $hassaved = true;
         }
+        //make sure the session knows which stage  it is at
         $_SESSION['stageID'] = $userstage;
 
-        if ($obj->stageID < 3) {
-            change_row($mysqli, 'users', array('stageID'), array(3), 'i', 'ID', $uID);
-        }//
         //get the icons
         $allmyicons = array();
         $icontourl = [];//is this the same?
@@ -175,8 +174,8 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
     <!--LHS popout section follows-->
     <div class="LHS" id="LHSbig" style="display: block;">
        <img src="/images/icons/help.svg" width="32 px" title="Help" onclick="gethelp()" class="box"><br>
-         <img  src="/images/icons/draft.svg" width="32 px" title="Save Draft" onclick="submitjson('temp');" class="box"><br>
-         <img src="/images/icons/check-form.svg" height="32 px" width="32 px" title="Finished: Save and Submit" onclick="submitjson('final');" class="box"><br>
+         <img  src="/images/icons/save.svg" width="32 px" title="Save Map" onclick="submitjson('temp');" class="box"><br>
+         <img src="/images/icons/fin.svg" width="32 px" title="Finished: Save and Submit" onclick="submitjson('final');" class="box"><br>
          <img src="/images/icons/delete.svg" title="Remove all markers" height="32 px" width="32 px" onclick="removeall()" class="box"><br>
         <div class="arrowleft"><img src="arrowin.png" onclick="hideele('LHS')" style="display: block;"/></div>
     </div>
