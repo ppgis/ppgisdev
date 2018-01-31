@@ -64,6 +64,7 @@ else{
 }
 
 //got to here so we are doing mapping.
+$nicons = 0;
 $oldusericons = 'null';
 //open the database and find the icons
 $mysqli = new mysqli('localhost', $config['uname'], $config['password'], $config['dbname']);
@@ -82,7 +83,7 @@ if ($mysqli) { //got database
             $hassaved = true;
         }
         //make sure the session knows which stage  it is at
-        $_SESSION['stageID'] = $userstage;
+        $_SESSION['userstage'] = $userstage;
 
         //get the icons
         $allmyicons = array();
@@ -95,7 +96,6 @@ if ($mysqli) { //got database
         //TODO check you got something!
         //$result->num_rows
         //I couldn't think of a smart way to do this
-        $nicons = 0;
         $icondir = $config['icondir'];
         while ($obj = mysqli_fetch_object($result)) {
             $partialiconname = $icondir . $obj->name . ".png";
@@ -110,7 +110,7 @@ if ($mysqli) { //got database
         //the user may have icons saved in either the temp or the permanent table
         $oldusericons = getusericons($mysqli, $uID, $icontourl);
         $nicons = sizeof($oldusericons);
-        if ($nicons == 0) $oldusericons = null;
+        if ($nicons == 0) $oldusericons = NULL;
         //
 
     } else {

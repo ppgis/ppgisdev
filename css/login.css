@@ -356,12 +356,18 @@ a:active {
     padding-left: 5px;
     font-size: 75%;
 }
-/* some survey styles */
+/* some input styles */
 input[type=text] {
     border: none;
     border-bottom: 1px solid #62a1cd;
 }
+input[type=password] {
+    border: none;
+    border-bottom: 1px solid #62a1cd;
+}
+/*some survey styles*/
 .surveyform label {display: block;background: white;padding-bottom: 10px;padding-top: 10px;}
 .surveyform label span { min-width:25%;font-size:90%;text-align:right;float:left;padding-top: 3px;}
 .surveyform label input { margin:0px;min-width:70%;}
 .surveyform {margin:10px;}
+/* some general form styles*/

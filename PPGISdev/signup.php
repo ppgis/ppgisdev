@@ -113,7 +113,7 @@ if ($message != "") {//we have to go somewhere else
 //if login worked
     if ($message === $goodlogin) {
         //successful signup
-        $_SESSION['stage'] = '1';//registered as a user
+        $_SESSION['userstage'] = PPGIS_stage_user;//registered as a user
         $_SESSION['login'] = "1";
         $_SESSION['sessionuname'] = $sessionuname;
         $_SESSION['dbuname'] = $sessionuname;

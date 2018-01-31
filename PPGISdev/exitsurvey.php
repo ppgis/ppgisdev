@@ -72,7 +72,7 @@ if ($mysqli) { //got database
             $userstage = PPGIS_stage_startsurvey;
             change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
         }
-        $_SESSION['stageID'] = $userstage;
+        $_SESSION['userstage'] = $userstage;
         //should we check whether the user has finished the survey?
 
         //get the icons

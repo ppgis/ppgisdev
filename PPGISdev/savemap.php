@@ -61,7 +61,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson'])) && 
                     change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
                 }
                 //make sure the session knows which stage  it is at
-                $_SESSION['stageID'] = $userstage;
+                $_SESSION['userstage'] = $userstage;
 
             }else{
                 $message = "User not found in database.";
