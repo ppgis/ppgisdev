@@ -88,8 +88,7 @@ if ($mysqli) { //got database
         //get the icons
         $allmyicons = array();
         $icontourl = [];//is this the same?
-        $dummyIcon = new Icon(999, '', '', '');
-        $thestuff = $dummyIcon->dbnames;
+        $thestuff = '*';
         $table = "mapicons";
         $sql = "SELECT $thestuff FROM $table";
         $result = mysqli_query($mysqli, $sql);
@@ -109,8 +108,8 @@ if ($mysqli) { //got database
         }
         //the user may have icons saved in either the temp or the permanent table
         $oldusericons = getusericons($mysqli, $uID, $icontourl);
-        $nicons = sizeof($oldusericons);
-        if ($nicons == 0) $oldusericons = NULL;
+        $nusericons = sizeof($oldusericons);
+        if ($nusericons == 0) $oldusericons = NULL;
         //
 
     } else {
@@ -120,7 +119,7 @@ if ($mysqli) { //got database
     // Free result set
     mysqli_free_result($result);
     //close connection
-    mysqli_close($con);
+    mysqli_close($mysqli);
 } else { //couldn't connect to db
     $message = "Database Connect error.<br>" . $config['syserror'];
 }
@@ -135,7 +134,7 @@ if ($message != "") {//we have to go somewhere else
 <!DOCTYPE html>
 <html>
 <head>
-    <?php doheader2($pagetitle) ?>
+    <?php doheader($pagetitle) ?>
     <script type="text/javascript" src="/js/mapping.js"></script>
 </head>
 <body>

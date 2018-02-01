@@ -112,6 +112,10 @@ $pages = array(
     echo "    <li><a  href='home.php'>PPGIS</a></li>";
     //from now on need to add navactive tag if $activepage
     if ($loggedin){
+        $userstage = $_SESSION['userstage'];
+        if ($userstage >= PPGIS_stage_finmapping){
+           $pages['Survey'] = 'exitsurvey.php';
+        }
         if ($activepage=='logout.php') echo "<li><a class='navactive' href='logout.php'>Logout</a></li>";
         else echo "<li><a href='logout.php'>Logout</a></li>";
     } else{

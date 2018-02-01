@@ -1,9 +1,6 @@
 <?php
 class Icon {
     public $iconID,$iconname,$iconaltval,$icondescript;
-    public $dbnames = 'ID,name,altval,description';//names of corresponding fields in the mapicon database table
-    //make sure that this is in the same order as the constructor args otherwise things will break
-    //TODO somewhat fix with variable arguments
     public function __construct($ID,$name,$altval,$descript)
     {
         if (func_num_args()==4) {

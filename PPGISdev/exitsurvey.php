@@ -6,6 +6,7 @@ require_once "test_input.php";
 require_once "dbfns.php";
 require_once "usefuls.php";
 require_once "mappingfns.php";
+require_once "surveyfns.php";
 require_once "/usr/local/bin/PPGISdev/messages.php";
 $pagetitle = "Exit Survey";
 
@@ -58,7 +59,9 @@ else{
 }
 
 //got to here so we are doing the survey.
+$oldsurveyresult = array();
 $oldusericons = 'null';
+$jsonoldresults = 'null';
 //open the database and find the icons
 $mysqli = new mysqli('localhost', $config['uname'], $config['password'], $config['dbname']);
 if ($mysqli) { //got database
@@ -67,43 +70,67 @@ if ($mysqli) { //got database
         $obj = mysqli_fetch_object($uname_found);
         $uID = $obj->ID;
         $userstage = $obj->stageID;
-        //if user found update stageID
-        if ($userstage < PPGIS_stage_startsurvey) {
-            $userstage = PPGIS_stage_startsurvey;
-            change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
-        }
-        $_SESSION['userstage'] = $userstage;
-        //should we check whether the user has finished the survey?
+        //the user must have submitted some mapping in order to do the survey
+        if ($userstage >= PPGIS_stage_hasdraft) {
 
-        //get the icons
-        $allmyicons = array();
-        $icontourl = [];//is this the same?
-        $dummyIcon = new Icon(999, '', '', '');
-        $thestuff = $dummyIcon->dbnames;
-        $table = "mapicons";
-        $sql = "SELECT $thestuff FROM $table";
-        $result = mysqli_query($mysqli, $sql);
-        //TODO check you got something!
-        //$result->num_rows
-        //I couldn't think of a smart way to do this
-        $nicons = 0;
-        $icondir = $config['icondir'];
-        while ($obj = mysqli_fetch_object($result)) {
-            $partialiconname = $icondir . $obj->name . ".png";
-            $fulliconname = htmlspecialchars($_SERVER['DOCUMENT_ROOT']) . $partialiconname;
-            if (file_exists($fulliconname)) {
-                $allmyicons[$nicons++] = new Icon($obj->ID, $obj->name, $obj->altval, $obj->description);
-                $icontourl[$obj->ID] = $partialiconname;
-            } else {
-                $message .= "<br>Missing file " . $fulliconname;
+            //if user found update stageID
+            if ($userstage < PPGIS_stage_startsurvey) {
+                $userstage = PPGIS_stage_startsurvey;
+                change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
             }
-        }
-        //the user may have icons saved in either the temp or the permanent table
-        $oldusericons = getusericons($mysqli, $uID, $icontourl);
-        $nicons = sizeof($oldusericons);
-        if ($nicons == 0) $oldusericons = null;
-        //
+            $_SESSION['userstage'] = $userstage;
 
+            //while the database is open, get the survey questions from the template
+            $questions = getsurveyquestions($mysqli);
+            if ($questions){
+                $dosurveyform = true;
+                $questionids = array_keys($questions);
+            }
+            else {
+                $dosurveyform = false;
+                $message = "Could not find any survey questions! ". $config['syserror'];
+            }
+            //var_dump($questionids);
+            //load up any saved survey values for this user
+            $oldsurveyresults = check_exist($mysqli, 'exitsurvey', 'userID', $uID, 'i');
+            if ($oldsurveyresults->num_rows != 0) {
+                $obj = mysqli_fetch_assoc($oldsurveyresults);
+                $oldsurveyresult = $obj;
+                $jsonoldresults = json_encode($obj);
+                //var_dump($jsonoldresults);//die;
+            }
+            //get the icons
+            $allmyicons = array();
+            $icontourl = [];//is this the same?
+            $table = "mapicons";
+            $sql = "SELECT * FROM $table";
+            $result = mysqli_query($mysqli, $sql);
+            //TODO check you got something!
+            //$result->num_rows
+            //I couldn't think of a smart way to do this
+            $nicons = 0;
+            $icondir = $config['icondir'];
+            while ($obj = mysqli_fetch_object($result)) {
+                $partialiconname = $icondir . $obj->name . ".png";
+                $fulliconname = htmlspecialchars($_SERVER['DOCUMENT_ROOT']) . $partialiconname;
+                if (file_exists($fulliconname)) {
+                    $allmyicons[$nicons++] = new Icon($obj->ID, $obj->name, $obj->altval, $obj->description);
+                    $icontourl[$obj->ID] = $partialiconname;
+                } else {
+                    $message .= "<br>Missing file " . $fulliconname;
+                }
+            }
+            //the user may have icons saved in either the table
+            $oldusericons = getusericons($mysqli, $uID, $icontourl);
+            $nusericons = sizeof($oldusericons);
+            if ($nusericons == 0) $oldusericons = null;
+
+            //
+        }
+        else {
+            $msgtype = 'nice';
+            $message = "Please revisit the mapping page and Save before taking the survey.";
+        }
     } else {
         $message .= "Couldn't find user in database. " . $config['syserror'];
     }
@@ -111,7 +138,7 @@ if ($mysqli) { //got database
     // Free result set
     mysqli_free_result($result);
     //close connection
-    mysqli_close($con);
+    mysqli_close($mysqli);
 } else { //couldn't connect to db
     $message = "Database Connect error.<br>" . $config['syserror'];
 }
@@ -126,35 +153,30 @@ if ($message != "") {//we have to go somewhere else
 <!DOCTYPE html>
 <html>
 
-<?php doheader2($pagetitle) ?>
+<?php doheader($pagetitle) ?>
 <script type="text/javascript" src="/js/mapping.js"></script>
+<script type="text/javascript">
+    function checkitout(e){
+        var theotherid = e.id.replace('dummy','other');
+        var theother = document.getElementById(theotherid);
+        if (e.checked == false ){theother.value = '';theother.placeholder = 'Other (please specify)'}
+        else {theother.placeholder = 'Other (please specify)';}
+    }
+</script>
 <body>
 <?php
 echo '<script type="text/javascript">';
 echo "var oldusericons = $oldusericons;";
+echo "var jsonoldresults = $jsonoldresults;";
 echo "</script>";
 ?>
 <?php dotopbit2($loggedin,$displayname) ?>
 
     <div class="surveycontainer">
-        <div class="mappysmall" id="map"></div>
+        <div class="mapcontainernew"><div class="mappysmall" id="map"></div></div>
         <div class="surveydialogue">
-            <h2>Exit Survey</h2>
-                <form class="surveyform">
-                    <label>
-                        <span>Your home address?</span>
-                    <input id="input1" type="text" placeholder="Home address">
-                    </label>
-                    <label>
-                        <span>Q2</span>
-                        <input id="input2" type="text">
-                    </label>
-                    <label>
-                        <span>Q3</span>
-                        <input id="input3" type="text">
-                    </label>
-                </form>
-
+            <h2 style="text-align: center;">Exit Survey</h2>
+            <?php if ($dosurveyform) dosurvey($questions,$oldsurveyresult);?>
         </div>
 
     </div>

@@ -5,10 +5,17 @@
  * Date: 14/12/17
  * Time: 6:52 PM
  */
+
+function walk_test_input(&$value,$key)
+{
+    $value=test_input($value);
+}
 function test_input($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
+    if (is_string($data)) {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+    }
     return $data;
 }
 
