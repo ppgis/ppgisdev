@@ -213,7 +213,7 @@ $displaycp = 'block';
         <input type="password" class="lat-long" name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
                placeholder="Password" title="use at least 6 of a-z A-z 0-9 - _ and no spaces">
 
-        <p><input type="submit" class="uq-emerald"></p>
+        <p><input type="submit" value='Submit' class="uq-emerald"></p>
     </form>
     <div class="goto" ><a href="cprequest.php" style="display:<?php echo $displaycp?>">Forgotten Password?</a></div>
     <div style="background-color: white;width: 100%">

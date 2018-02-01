@@ -230,7 +230,7 @@ $pagetitle = "password change";
 <input type="password" class="lat-long" name="retype_password" required="required">
 <p>
     <?php if ($message ==="") echo "<input type='hidden' name='token' value=$token>"; ?>
-<p><input type="submit"></p>
+<p><input type="submit" value='Submit'></p>
 </form>
 
 </div>

@@ -161,7 +161,7 @@ if ($message != "") {//we have to go somewhere else
             <div class="formtext">(Optional) email address</div>
             <input type="email" class="lat-long" name="email"
                    placeholder = "email@address">
-            <p><input type="submit"></p>
+            <p><input type="submit" value='Submit'></p>
         </form>
     <!--TODO put a back to home link-->
     </div>

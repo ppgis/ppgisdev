@@ -102,7 +102,7 @@ function dosurvey($questions,$oldsurveyresult){
         echo "\n</div>\n";
         echo "</p>";
     }
-    echo "<p id='exitsubmit'><input type='submit' class='uq-emerald'></p></form>";
+    echo "<p id='exitsubmit'><input type='submit' value='Submit' class='uq-emerald'></p></form>";
 }
 /*function ee($thing){
     echo ($thing);

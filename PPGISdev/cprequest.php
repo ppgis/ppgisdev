@@ -140,7 +140,7 @@ $pagetitle = "Request password change";
         <div class="formtext">Enter the email address of your PPGIS account:</div>
         <input type="email" class="lat-long" name="email" required="required"
                placeholder = "email@address">
-        <p><input type="submit"></p>
+        <p><input type="submit" value='Submit'></p>
     </form>
 
 </div>
