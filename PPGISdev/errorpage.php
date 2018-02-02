@@ -6,6 +6,7 @@ $requestType = $_SERVER['REQUEST_METHOD'];
 $message = "";
 $msgtype = 'default';
 
+
 switch ($requestType) {
     case 'GET':
         if (isset($_GET['message'])) $message = htmlspecialchars($_GET['message']);//clean it up
@@ -16,9 +17,28 @@ switch ($requestType) {
         break;
 }
 
+if ($message == PPGIS_map_before_survey_message){
+    $message = PPGIS_map_before_survey;
+    $thepage = 'map.php';
+    $thename = 'mapping';
+}
+else {
+    $thename = 'home';
+    $thepage = $config['homepage'];
+}
+
 $loggedin = false;
 session_start();
-if (!empty($_SESSION['sessionuname'])) $loggedin = true;
+if (!empty($_SESSION['sessionuname']) & ($msgtype != 'bad') & ($msgtype != 'success')) {
+    $loggedin = true;
+    $displayname = $_SESSION['sessionuname'];
+    $message = "Hello $displayname!<br>".$message;
+}
+else {
+    $displayname = 'not logged in';
+}
+
+/*beth old if (!empty($_SESSION['sessionuname'])) $loggedin = true;
 if ($loggedin){
     if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
@@ -29,7 +49,7 @@ if ($loggedin){
 }
 else{
     $displayname = 'not logged in';
-}
+}*/
 
 
 switch ($msgtype){
@@ -40,12 +60,15 @@ switch ($msgtype){
         $pagetitle = "Success!";
         break;
     case 'nice':
-        $pagetitle = "Warning";
+        $pagetitle = "Alert";
         break;
     default:
         $pagetitle = "An error has occurred";
         break;
 }
+
+
+
 
 ?>
 <!DOCTYPE html>
@@ -57,7 +80,7 @@ switch ($msgtype){
 <div class="contentcontainer">
 
         <div class="error centredtext" id="signuperror"><?php echo $pagetitle.'<br>'.$message; ?></div>
-        <div class="lat-long"><a href="<?php echo($config['homepage'])?>">Go to our Home Page</a>
+        <div class="lat-long centredtext">Please use the top bar to navigate to the page of your choice, or <br><a href="<?php echo($thepage)?>">head to PPGIS <?php echo($thename)?></a>.
 
 </div>
 

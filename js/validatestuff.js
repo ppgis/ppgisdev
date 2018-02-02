@@ -16,10 +16,10 @@ function validate(form,formtype)
         var password2 = form.retype_password.value;
         if (password !== password2) failp2 = "Passwords did not match. ";
     }
-    //only rudimentary email testing
+    //only rudimentary email testing and ignore empty
     if (/e/.test(formtype)){
         var email = form.email.value;
-        if (!/.+@.+..+/.test(email)) faile = "Non-conformal Email address.";
+        if ((email != '') & (!/.+@.+..+/.test(email))) faile = "Non-conformal Email address.";
     }
     var fail = failu+failp+failp2+failup+faile;
     fail = fail.replace(/\. */g,".\n");

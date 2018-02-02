@@ -35,7 +35,8 @@ function insert_row($mysqli,$table,$columns,$values,$valuetypes){
         $colstr.=")";
         $qstr .=")";
 
-
+        //ee("INSERT INTO $table $colstr VALUES $qstr");
+        //var_dump($bind_params);
         if (!($SQL = $mysqli->prepare("INSERT INTO $table $colstr VALUES $qstr"))){
             $result = "error in mysqli prepare"."INSERT INTO $table $colstr VALUES $qstr";
             return $result;
@@ -97,6 +98,22 @@ function change_row($mysqli,$table,$columns,$values,$valuetypes,$keycol,$keyval)
     }
 }
 
-
-
-
+function getusericons($mysqli,$uID,$icontourl){
+    $table = "usericons";
+    $thestuff = "*";
+    $sql = "SELECT $thestuff FROM $table WHERE userID='$uID'";
+    $result = mysqli_query($mysqli, $sql);
+    if ($result->num_rows == 0) {
+        return NULL;
+    }
+    else {
+        $allrows = [];
+        while ($obj = mysqli_fetch_object($result)) {
+            $ID = $obj->iconID;
+            $iconurl = $icontourl[$ID];
+            $tmparray = ['url' => $iconurl, 'lat' => $obj->latitude, 'lng' => $obj->longitude, 'iconID' => $ID];
+            array_push($allrows, $tmparray);
+        }
+        return json_encode($allrows);
+    }
+}

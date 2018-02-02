@@ -25,9 +25,16 @@ session_start();
 $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
 
-if (!empty($_SESSION['sessionuname'])) $loggedin = true;
-if ($loggedin){
-    if ($_SESSION['isguest']=='true'){
+if (!empty($_SESSION['sessionuname'])) {
+    $loggedin = true;
+    $displayname = $_SESSION['sessionuname'];
+}
+else {
+    $displayname = 'not logged in';
+}
+/*beth old if ($loggedin){
+    $displayname = $_SESSION['sessionuname'];
+   if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
     }
     else {
@@ -36,7 +43,7 @@ if ($loggedin){
 }
 else{
     $displayname = 'not logged in';
-}
+}*/
 
 
 $msgtype='bad';
@@ -176,7 +183,7 @@ if ($message !="") {
         $_SESSION['sessionuname'] = $uname;
         $_SESSION['dbuname'] = $uname;
         //not a guest after signup!!!
-        $_SESSION['isguest'] = '0';
+        /*beth old $_SESSION['isguest'] = '0';*/
         header($phpgotonext);
     } else {
         $errorMessage = "Location: errorpage.php?message=" . $message . "&msgtype=" . $msgtype;
@@ -184,6 +191,7 @@ if ($message !="") {
     }
 }
 //else
+
 
 $pagetitle = "password change";
 
@@ -213,20 +221,22 @@ $pagetitle = "password change";
             <li>password should not be the same as your username!</li>
             <li>email address will be used for password recovery</li>
         </ul></div>
-    <form method="post" action="cp.php" onsubmit="return validate(this,'pr')">
-        <?php if ($message ==="") echo "<div class='formtext'>New password for $uname:<br>"; ?>
-        <button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password','retype_password'])">(show)</button>
-</div>
-<input type="password" class="lat-long" name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
+    <form method="post" action="cp.php" onsubmit="return validate(this,'pr')" class="smallform">
+        <?php if ($message ==="") echo "<p class='centredtext'>New password for $uname:</p>"; ?>
+
+        <div class="formtext">password:
+            <button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password','retype_password'])">(show)</button>
+        </div>
+<input type="password"  name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
        placeholder="Password" title="use at least 6 of a-z A-z 0-9 - _ and no spaces">
 <div class="formtext">retype the password:</div>
-<input type="password" class="lat-long" name="retype_password" required="required">
+<input type="password"  name="retype_password" required="required">
 <p>
     <?php if ($message ==="") echo "<input type='hidden' name='token' value=$token>"; ?>
-<p><input type="submit"></p>
+<p class="centredtext"><input type="submit" value='Submit' class="uq-emerald" style="text-align:center"></p>
 </form>
-
 </div>
+
 
 
 <?php dofooter() ?>

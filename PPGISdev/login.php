@@ -13,20 +13,25 @@ $errorMessage = "";//will display on page
 $msgtype='bad';
 $message = "";//will display on error page
 $backhere = 'login.php';//in case we need to logout and come back here
-$isguest = '0';
+/*beth old $isguest = '0';//whether this user is a guest or not*/
+$loggedin = false;
+$testforguest = $config['testforguest'];
 
 $uname = "";
 $pword = "";
-
-
+//changed session time in php.ini
+// server should keep session data for AT LEAST 2 hours
+//ini_set('session.gc_maxlifetime', 7200);
+// each client should remember their session id for EXACTLY 2 hours
+//session_set_cookie_params(7200);
 session_start();
+
 //were to go back to after login?
 $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
 
-$loggedin = false;
 
-$testforguest = $config['testforguest'];
+
 
 //already have a session?
 if (!empty($_SESSION['sessionuname'])){
@@ -35,21 +40,22 @@ if (!empty($_SESSION['sessionuname'])){
     $sessionuname = $_SESSION['sessionuname'];
     $msgtype='nice';
     $loggedin = true;
-    if ($_SESSION['isguest']=='true'){
+    $displayname = $_SESSION['sessionuname'];
+/*beth old    if ($_SESSION['isguest']=='true'){
         $displayname = 'Guest';
     }
     else {
         $displayname = $_SESSION['sessionuname'];
     }
-
+*/
 }
-else {
+else {//there is no session yet
     $displayname = "not logged in";
     $sessionuname = "not logged in";
     $isaguest = false;
     $badguest = true;
 
-    //are we trying to be a guest? Could come from post or get
+    //did they click continue as guest? (Could come from post or get)
     if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['guesty']))){
         $isaguest = true;
         if (test_input($_POST['guesty'])===$testforguest){
@@ -86,26 +92,29 @@ else {
                         //unique email includes ip address
                         $ip = preg_replace('/\s+/', '', $_SERVER['REMOTE_ADDR']);
                         $email = preg_replace('/@/', '', $ip . $uname);
-                        $colnames = array('uname', 'password', 'email');
-                        $values = array($uname, $phash, $email);
-                        $valuetypes = 'sss';
+                        $colnames = array('uname', 'password', 'email','stageID');
+                        $values = array($uname, $phash, $email,0);//status 0 for guest user
+                        $valuetypes = 'sssi';
                         $retval = insert_row($mysqli, $table, $colnames, $values, $valuetypes);
 
                         if (preg_match("/^error/", $retval)) {
                             $errorMessage = $retval;
                         } else {
-                            $isguest = '1';
-                            $sessionuname = 'Guest';
+                            /*beth old $isguest = '1';*/
+                            $sessionuname = PPGIS_guestDisplayName;//'Guest';
                             $dbuname = $uname;
                             $message = $goodlogin;
+                            $userstage = '0';
                         }
+
                     } else {//must have found this guest but we will let them continue
-                        $isguest = '1';
-                        $sessionuname = 'Guest';
+                        /*beth old $isguest = '1'; */
+                        $sessionuname = PPGIS_guestDisplayName;//'Guest';
                         $dbuname = $uname;
                         $message = $goodlogin;
+                        $userstage = '0';
                     }
-
+                 //todo save a login event to the database
 
                 } else {
                     $message = "Database Connect error.<br>" . $config['syserror'];
@@ -130,12 +139,13 @@ else {
                 if ($user_found->num_rows == 1) {
 
                     $db_field = $user_found->fetch_assoc();//get the row values into an associative array
-
                     if (password_verify($pword, $db_field['password'])) {
                         $message = $goodlogin;
-                        $isguest = '0';
+                        /*beth old $isguest = '0';*/
                         $sessionuname = $uname;
                         $dbuname = $uname;
+                        $userstage = $db_field['stageID'];
+
                     } else {
                         $errorMessage = "Username/Password mismatch";
                         //session_start();
@@ -163,7 +173,8 @@ if ($message != "") {//we have to go somewhere else
         $_SESSION['login'] = "1";
         $_SESSION['sessionuname'] = $sessionuname;
         $_SESSION['dbuname'] = $dbuname;
-        $_SESSION['isguest'] = $isguest;
+        /*beth old $_SESSION['isguest'] = $isguest;*/
+        $_SESSION['userstage'] = $userstage;
         header($phpgotonext);
     } else {
 //if something bad happened TODO make sure session is unset?
@@ -194,21 +205,23 @@ $displaycp = 'block';
     <div class="dialogue">
         <div class="error" id="signuperror"><?php echo $errorMessage ?></div>
     </div>
-    <form method="post" action="login.php" onsubmit="return validate(this,'up')">
+    <div style="text-align:left;">
+    <form method="post" action="login.php" onsubmit="return validate(this,'up')" class="smallform">
         <div class="formtext">Username:</div>
-        <input type="text" class="lat-long" name="username" required="required"
-               placeholder="Username" pattern="[a-zA-Z0-9_-]{1,25}" title="use a-z A-z 0-9 - _ and no spaces">
-        <div class="formtext">Password:<br>
-            <button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password'])">(show)</button></div>
-        <input type="password" class="lat-long" name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
+        <input type="text" name="username" required="required"
+               placeholder="Username" pattern="[a-zA-Z0-9_-]{1,25}" title="use a-z A-z 0-9 - _ and no spaces"><br>
+        <div class="formtext">Password:<button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password'])">(show)</button></div>
+        <input type="password"  name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
                placeholder="Password" title="use at least 6 of a-z A-z 0-9 - _ and no spaces">
-        <p><input type="submit" ></p>
+    </div>
+        <p class="centredtext" ><input type="submit" value='Submit' class="uq-emerald" style="text-align:center"></p>
     </form>
-    <div class="goto" ><a href="cprequest.php" style="display:<?php echo $displaycp?>">Forgotten Password?</a></div>
+
+    <div class="goto centredtext" ><a href="cprequest.php" style="display:<?php echo $displaycp?>">Forgotten Password?</a></div>
     <div style="background-color: white;width: 100%">
         <form method="post" action="login.php">
             <input type="hidden" name="guesty" value="<?php echo $testforguest?>">
-            <p><input class="uq-emerald" type="submit" value="Continue as Guest" id="guesty"></p>
+            <p class="centredtext"><input class="uq-emerald" type="submit" value="Continue as Guest" id="guesty"></p>
         </form>
     </div>
 </div>

@@ -1,10 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: beth
- * Date: 18/12/17
- * Time: 8:43 AM
+/*
+some global constants
  */
+define("PPGIS_stage_guest", 0);
+define("PPGIS_stage_user", 1);
+define("PPGIS_stage_startmapping", 2);
+define("PPGIS_stage_hasdraft", 3);
+define("PPGIS_stage_finmapping", 4);
+define("PPGIS_stage_startsurvey", 5);
+define("PPGIS_stage_finsurvey", 6);
+define("PPGIS_guestDisplayName", "Guest");
+define("PPGIS_map_before_survey",'Before doing the survey please visit the mapping page and Save.');
+define("PPGIS_map_before_survey_message",'mapbeforesurvey');
+
 function send_html_mail($to,$from,$subject,$message){
 
     $headers  = "From: $from\r\n";
@@ -100,12 +108,15 @@ function dotopbit2($loggedin,$displayname){
 $pages = array(
     'Mapping' => 'map.php');//this is for the pages after log in
     //first do the PPGIS link on the LHS of the topbar
-    echo "<span class='pagebanner2'>";
     echo "<nav class='darkbg'>";
     echo "<ul style='list-style-type: none'>";
     echo "    <li><a  href='home.php'>PPGIS</a></li>";
     //from now on need to add navactive tag if $activepage
     if ($loggedin){
+        $userstage = $_SESSION['userstage'];
+        if ($userstage >= PPGIS_stage_finmapping){
+           $pages['Survey'] = 'exitsurvey.php';
+        }
         if ($activepage=='logout.php') echo "<li><a class='navactive' href='logout.php'>Logout</a></li>";
         else echo "<li><a href='logout.php'>Logout</a></li>";
     } else{
@@ -128,7 +139,6 @@ $pages = array(
     $stuff = <<<END
     </ul>
 </nav>
-</span>
 END;
     echo $stuff;
 }
@@ -145,6 +155,9 @@ END;
 }
 
 function phpAlertandgo($msg,$page){
-    echo"<script type='text/javascript'>alert('$msg');window.location.href = '$page.php'</script>";
-
+    echo"<script type='text/javascript'>alert('$msg');document.location.href = '$page.php';</script>";
+    die;//otherwise it might not alert and go
+}
+function ee ($string_message) {
+    $_SERVER['SERVER_PROTOCOL'] ? print "$string_message<br />" : print "$string_message\n";
 }
