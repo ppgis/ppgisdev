@@ -61,7 +61,7 @@ else{
 //got to here so we are doing the survey.
 $oldsurveyresult = array();
 $oldusericons = 'null';
-$jsonoldresults = 'null';
+//$jsonoldresults = 'null';
 //open the database and find the icons
 $mysqli = new mysqli('localhost', $config['uname'], $config['password'], $config['dbname']);
 if ($mysqli) { //got database
@@ -96,7 +96,7 @@ if ($mysqli) { //got database
             if ($oldsurveyresults->num_rows != 0) {
                 $obj = mysqli_fetch_assoc($oldsurveyresults);
                 $oldsurveyresult = $obj;
-                $jsonoldresults = json_encode($obj);
+                //$jsonoldresults = json_encode($obj);
                 //var_dump($jsonoldresults);//die;
             }
             //get the icons
@@ -129,7 +129,7 @@ if ($mysqli) { //got database
         }
         else {
             $msgtype = 'nice';
-            $message = "Please revisit the mapping page and Save before taking the survey.";
+            $message = "Before doing the survey, please visit the mapping page and Save.";
         }
     } else {
         $message .= "Couldn't find user in database. " . $config['syserror'];
@@ -155,25 +155,31 @@ if ($message != "") {//we have to go somewhere else
 
 <?php doheader($pagetitle) ?>
 <script type="text/javascript" src="/js/mapping.js"></script>
-<script type="text/javascript">
+<!--script type="text/javascript">
+    var largemap = true;
     function checkitout(e){
         var theotherid = e.id.replace('dummy','other');
         var theother = document.getElementById(theotherid);
         if (e.checked == false ){theother.value = '';theother.placeholder = 'Other (please specify)'}
         else {theother.placeholder = 'Other (please specify)';}
     }
-</script>
+    function showmap(){
+        var themap = document.getElementById('map');
+        var theheight = themap.style.innerHeight;
+        if (largemap){themap.style.height = '40px';largemap = false;}
+        else {themap.style.height = '400px';largemap = true;}
+    }
+</script-->
 <body>
 <?php
 echo '<script type="text/javascript">';
 echo "var oldusericons = $oldusericons;";
-echo "var jsonoldresults = $jsonoldresults;";
 echo "</script>";
 ?>
 <?php dotopbit2($loggedin,$displayname) ?>
 
-    <div class="surveycontainer">
-        <div class="mapcontainernew"><div class="mappysmall" id="map"></div></div>
+    <div class="surveycontainer"><div onclick="showmap();" class="showhidemap"><img style="vertical-align: bottom;" src="/images/icons/pm.svg" width="24px">&nbsp;click to show/hide the map</div>
+        <div class="mappysmall" id="map"></div>
         <div class="surveydialogue">
             <h2 style="text-align: center;">Exit Survey</h2>
             <?php if ($dosurveyform) dosurvey($questions,$oldsurveyresult);?>

@@ -19,9 +19,10 @@ switch ($requestType) {
 
 $loggedin = false;
 session_start();
-if (!empty($_SESSION['sessionuname'])) {
+if (!empty($_SESSION['sessionuname']) & ($msgtype != 'bad') & ($msgtype != 'success')) {
     $loggedin = true;
     $displayname = $_SESSION['sessionuname'];
+    $message = "Hello $displayname!<br>".$message;
 }
 else {
     $displayname = 'not logged in';
@@ -49,7 +50,7 @@ switch ($msgtype){
         $pagetitle = "Success!";
         break;
     case 'nice':
-        $pagetitle = "Warning";
+        $pagetitle = "Alert";
         break;
     default:
         $pagetitle = "An error has occurred";
@@ -66,7 +67,7 @@ switch ($msgtype){
 <div class="contentcontainer">
 
         <div class="error centredtext" id="signuperror"><?php echo $pagetitle.'<br>'.$message; ?></div>
-        <div class="lat-long"><a href="<?php echo($config['homepage'])?>">Go to our Home Page</a>
+        <div class="lat-long">Please use the top bar to navigate to the page of your choice, or <br><a href="<?php echo($config['homepage'])?>">head to PPGIS home</a>.
 
 </div>
 

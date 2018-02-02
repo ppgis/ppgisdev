@@ -17,6 +17,7 @@ var currentID = 0;
 var swbound;
 var nebound;
 var bclistener;
+var staticmap = true;
 
 function myMap() {
     var mapCanvas = document.getElementById("map");
@@ -44,56 +45,70 @@ function myMap() {
         swbound = new google.maps.LatLng(minlat,minlong);
         nebound = new google.maps.LatLng(maxlat,maxlong);
         bclistener = google.maps.event.addListener(map, 'bounds_changed', function() {
-           // alert(swbound);
-           mapbounds = map.getBounds();
-           if ((!mapbounds.contains(swbound)) | (!mapbounds.contains(nebound))){
-               mapbounds.extend(swbound);
-               mapbounds.extend(nebound);
-               map.fitBounds(mapbounds);
-           }
-           bclistener.remove();
+            // alert(swbound);
+            mapbounds = map.getBounds();
+            if ((!mapbounds.contains(swbound)) | (!mapbounds.contains(nebound))){
+                mapbounds.extend(swbound);
+                mapbounds.extend(nebound);
+                map.fitBounds(mapbounds);
+            }
+            bclistener.remove();
         });
     }
-
+    if (staticmap) {
+        google.maps.event.addListenerOnce(map, "idle", function () {
+            showmap();
+        });
+    }
+    //doesn't work if (staticmap) {}
 }
 
 function placeMarker(location,theurl,theiconID) {
 
-        if (arguments.length == 1){
-            theanimation = google.maps.Animation.BOUNCE;
-        }
-        else {
-            theanimation = null;
-            currentmarker = theurl;
-            currentID = theiconID;
-        }
-        nmarkers +=1;
-        var themarker = new google.maps.Marker({
-            position: location,
-            map: map,
-            icon: {
-                url: currentmarker
-            },
-            draggable: true,
-            animation: theanimation,
-            iconID: currentID,
-            nmarker: nmarkers,
-            title: 'Double-click to remove',
-        });
-        googlemarkers[nmarkers] = themarker;
-        //check that it worked?
-        //TODO no more than 40 of one marker type?
-        setTimeout(function(){ themarker.setAnimation(null); }, 750);
-        //document.getElementById('theform').style.display = 'block';
-        themarker.addListener('dblclick', function() {
+    if (arguments.length == 1) {
+        theanimation = google.maps.Animation.BOUNCE;
+    }
+    else {//placing old markers
+        theanimation = null;
+        currentmarker = theurl;
+        currentID = theiconID;
+    }
+    nmarkers += 1;
+    var markerOptions = {
+        position: location,
+        map: map,
+        icon: {
+            url: currentmarker
+        },
+        draggable: false,
+        animation: theanimation,
+        iconID: currentID,
+        nmarker: nmarkers
+    };
+    if (!staticmap) {
+        markerOptions['title'] = 'Double-click to remove',
+            markerOptions['draggable'] = true
+    }
+    ;
+    var themarker = new google.maps.Marker(markerOptions);
+    googlemarkers[nmarkers] = themarker;
+    //check that it worked?
+    //TODO no more than 40 of one marker type?
+    setTimeout(function () {
+        themarker.setAnimation(null);
+    }, 750);
+    //document.getElementById('theform').style.display = 'block';
+    if (!staticmap){
+        themarker.addListener('dblclick', function () {
             markerID = this.nmarker;
             googlemarkers[markerID].setMap(null);
             delete googlemarkers[markerID];
-            if (document.getElementById('RHSbig').style.display=='block') anotherline();
+            if (document.getElementById('RHSbig').style.display == 'block') anotherline();
         });
-        themarker.addListener('position_changed',function(){
-            if (document.getElementById('RHSbig').style.display=='block') anotherline();
+        themarker.addListener('position_changed', function () {
+            if (document.getElementById('RHSbig').style.display == 'block') anotherline();
         });
+    }
 }
 
 
@@ -103,13 +118,13 @@ function dropmarker(){
     //console.log(rect.left,ecx,rect.right,rect.top,ecy,rect.bottom,)
     var tol = 10;
     if ((ecx > (rect.left + tol) & (ecx < (rect.right - tol))) & (ecy > (rect.top+tol)) & (ecy < rect.bottom-tol)) canplace = true;
-        else canplace = false;http://localhost/images/icons/icon1s.png
-    //var xcoor = dx + e.clientX - rect.left;
-    //var ycoor = dy + e.clientY - rect.top;
-    var xcoor = dx + ecx - rect.left;
+    else canplace = false;http://localhost/images/icons/icon1s.png
+        //var xcoor = dx + e.clientX - rect.left;
+        //var ycoor = dy + e.clientY - rect.top;
+        var xcoor = dx + ecx - rect.left;
     var ycoor = dy + ecy - rect.top;
     var xc = ecx-rect.left;http://localhost/images/icons/icon6s.png
-    var yc = ecy - rect.top;
+        var yc = ecy - rect.top;
     mouseLatLng = pixelToLatlng(xc,yc);
     markerLatLng = pixelToLatlng(xc+dx,yc+dy);
     if (isinmap(mouseLatLng)&canplace) {
@@ -309,7 +324,7 @@ function submitjson(savetype){
 
 // Not used : When the user clicks on <div>, open the popup
 function togglepopup() {
-   alert("This is a HELP message. I may put it in a file perhaps? \n Or should I pop up another tab on the browser?");
+    alert("This is a HELP message. I may put it in a file perhaps? \n Or should I pop up another tab on the browser?");
 }
 function gethelp(){
     window.open("helpfile.pdf");
@@ -323,4 +338,17 @@ function removeall() {
         delete googlemarkers[markerID];
     }
     if (document.getElementById('RHSbig').style.display==='block') anotherline();
+}
+var largemap = true;
+function checkitout(e){
+    var theotherid = e.id.replace('dummy','other');
+    var theother = document.getElementById(theotherid);
+    if (e.checked == false ){theother.value = '';theother.placeholder = 'Other (please specify)'}
+    else {theother.placeholder = 'Other (please specify)';}
+}
+function showmap(){
+    var themap = document.getElementById('map');
+    var theheight = themap.style.innerHeight;
+    if (largemap){themap.style.height = '40px';largemap = false;}
+    else {themap.style.height = '400px';largemap = true;}
 }

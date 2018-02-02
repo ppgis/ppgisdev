@@ -22,15 +22,16 @@ function getsurveyquestions($mysqli){
     return $questions;
 }
 function dosurvey($questions,$oldsurveyresult){
-    echo "<form class='surveyform' action='aawhatup.php' method='post'>";
+    echo "<form class='smallform' action='saveexitsurvey.php' method='post'>";
     foreach ($questions as $num=>$question){
         $thetext = $question['qtext'];
-        echo "<p>";
-        echo "\n<label><span>$thetext</span>";
-        echo "</label>";
+        //echo "<p>";
+        echo "\n<div class='formtext'>$thetext</div>";
+        //echo "\n<label><span>$thetext</span>";
+        //echo "</label>";
         $name = "Q$num";
         $thetype = $question['answertype'];
-        echo "<div style='display:inline-block;text-align:left;font-size:90%;color:#62a1cd;'>\n";
+        echo "<div class='surveyformanswer'>\n";
         switch($thetype){
             case 'checkbox':
                 array_walk($question['values'],"trim_walk");
@@ -48,7 +49,7 @@ function dosurvey($questions,$oldsurveyresult){
                     $checked = in_array($thevalue,$tempvalues)?'checked':'';}
                     else $checked = '';
                     if ($thevalue != PPGIS_OTHER) {
-                        echo "<input class='cb' name='$name' type='$thetype' value='$thevalue' $checked>$thevalue<br>";
+                        echo "<input class='cbox' name='$name' type='$thetype' value='$thevalue' $checked>$thevalue<br>";
                     }
                     else {
                         $name = "Q$num"."[dummy]";
@@ -56,13 +57,13 @@ function dosurvey($questions,$oldsurveyresult){
                         $thenewid = "Q$num"."other";
                         $newname = "Q$num"."[".PPGIS_OTHER."]";
                         if ($othervalue == '') {
-                            echo "<input id='$theid' class='cb' name='$name' type='$thetype' value='$thevalue' onclick='checkitout(this);' $checked>";
+                            echo "<input id='$theid' class='cbox' name='$name' type='$thetype' value='$thevalue' onclick='checkitout(this);' $checked>";
                             if ($checked == '')
                                 echo "<input id='$thenewid' class='formtext' name='$newname' type='text' default='$thevalue' placeholder='$thevalue (please specify)'>";
                             else echo "<input id='$thenewid' class='formtext' name='$newname' type='text' value='$thevalue'>";
                         }
                         else {
-                            echo "<input id='$theid' class='cb' name='$name' type='$thetype' value='$thevalue' onclick='checkitout(this);' checked>";
+                            echo "<input id='$theid' class='cbox' name='$name' type='$thetype' value='$thevalue' onclick='checkitout(this);' checked>";
                             echo "<input id='$thenewid' class='formtext' name='$newname' type='text' value='$othervalue'>";}
                     }
                 }
@@ -100,9 +101,10 @@ function dosurvey($questions,$oldsurveyresult){
 
         }
         echo "\n</div>\n";
-        echo "</p>";
+        //echo "</p>";
     }
     echo "<p id='exitsubmit'><input type='submit' value='Submit' class='uq-emerald'></p></form>";
+
 }
 /*function ee($thing){
     echo ($thing);

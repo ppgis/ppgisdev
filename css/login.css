@@ -105,7 +105,7 @@
     /*text-align: center;*/
     width: 90%;
     min-height: 450px;
-    background-color: #FFFFFF;
+    background-color: white;
     margin: auto;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -115,7 +115,7 @@
 }
 .surveydialogue{
     text-align: left;
-    width: 63%;
+    width: 100%;
     min-width: 200px;
     background-color: #fafafa;
     border-radius: 0px;
@@ -125,15 +125,23 @@
     height: 100%;
     width: 35%;
     min-width: 200px;
-    float: right;
-    vertical-align: center;
 }
 .mappysmall{
     height: 400px;
     width: 100%;
-
+    border: 1px solid #c0c0c0;
 }
-
+.showhidemap{
+    position:absolute;
+    z-index: 10;
+    background-color:#62a1cd;
+    color:white;
+    padding:2px;
+    border: 1px solid white;
+}
+.showhidemap:hover {
+    background: #4b7096 none;
+}
 
 .LHS {
     position: absolute;
@@ -191,11 +199,35 @@ div[class^='arrow'] img{
     padding: 2px;
     margin-bottom: 4px;
 }
+.formtext[id*='other']{margin-left:0px;}
+.surveyformanswer {
+    display:inline-block;text-align:left;font-size:90%;color:#62a1cd;padding-left:10px;min-width:50%; margin-bottom: 10px;
+}
+form.smallform div.formtext{
+    padding: 2px;
+    padding-right: 0px;
+    margin-bottom: 10px;
+    display: inline-block;
+    width: 43%;
+    text-align:right;
+    vertical-align:top;
+}
+form.smallform input {
+    min-width:100px;
+    margin-left:10px;
+}
+form.smallform input.cbox {
+    width:20px;
+    min-width:20px;
+}
+.smallform {background-color: white;padding:10px;}
 #asubmit{
     text-decoration: none;
     color:#767542;
 }
 button#shbutton {
+    padding:1px;
+    padding-left:5px;
     border: none;
     text-align: center;
     background-color: white;

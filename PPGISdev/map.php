@@ -140,6 +140,7 @@ if ($message != "") {//we have to go somewhere else
 <body>
 <?php
 echo '<script type="text/javascript">';
+echo "staticmap = false;";
 if (($backfromsave) & ($nicons > 0)){
     echo "alert('A draft of your map has been saved.');";
 }

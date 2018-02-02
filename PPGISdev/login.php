@@ -205,16 +205,18 @@ $displaycp = 'block';
     <div class="dialogue">
         <div class="error" id="signuperror"><?php echo $errorMessage ?></div>
     </div>
-    <form method="post" action="login.php" onsubmit="return validate(this,'up')">
+    <div style="text-align:left;">
+    <form method="post" action="login.php" onsubmit="return validate(this,'up')" class="smallform">
         <div class="formtext">Username:</div>
-        <input type="text" class="lat-long" name="username" required="required"
-               placeholder="Username" pattern="[a-zA-Z0-9_-]{1,25}" title="use a-z A-z 0-9 - _ and no spaces">
-        <div class="formtext">Password:<button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password'])">(show)</button><br></div>
-        <input type="password" class="lat-long" name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
+        <input type="text" name="username" required="required"
+               placeholder="Username" pattern="[a-zA-Z0-9_-]{1,25}" title="use a-z A-z 0-9 - _ and no spaces"><br>
+        <div class="formtext">Password:<button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password'])">(show)</button></div>
+        <input type="password"  name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
                placeholder="Password" title="use at least 6 of a-z A-z 0-9 - _ and no spaces">
-
-        <p><input type="submit" value='Submit' class="uq-emerald"></p>
+    </div>
+        <p ><input type="submit" value='Submit' class="uq-emerald" style="text-align:center"></p>
     </form>
+
     <div class="goto" ><a href="cprequest.php" style="display:<?php echo $displaycp?>">Forgotten Password?</a></div>
     <div style="background-color: white;width: 100%">
         <form method="post" action="login.php">
