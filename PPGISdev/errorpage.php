@@ -17,6 +17,16 @@ switch ($requestType) {
         break;
 }
 
+if ($message == PPGIS_map_before_survey_message){
+    $message = PPGIS_map_before_survey;
+    $thepage = 'map.php';
+    $thename = 'mapping';
+}
+else {
+    $thename = 'home';
+    $thepage = $config['homepage'];
+}
+
 $loggedin = false;
 session_start();
 if (!empty($_SESSION['sessionuname']) & ($msgtype != 'bad') & ($msgtype != 'success')) {
@@ -57,6 +67,9 @@ switch ($msgtype){
         break;
 }
 
+
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -67,7 +80,7 @@ switch ($msgtype){
 <div class="contentcontainer">
 
         <div class="error centredtext" id="signuperror"><?php echo $pagetitle.'<br>'.$message; ?></div>
-        <div class="lat-long centredtext">Please use the top bar to navigate to the page of your choice, or <br><a href="<?php echo($config['homepage'])?>">head to PPGIS home</a>.
+        <div class="lat-long centredtext">Please use the top bar to navigate to the page of your choice, or <br><a href="<?php echo($thepage)?>">head to PPGIS <?php echo($thename)?></a>.
 
 </div>
 

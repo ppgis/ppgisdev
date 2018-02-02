@@ -129,7 +129,7 @@ if ($mysqli) { //got database
         }
         else {
             $msgtype = 'nice';
-            $message = "Before doing the survey, please visit the mapping page and Save.";
+            $message = PPGIS_map_before_survey_message;
         }
     } else {
         $message .= "Couldn't find user in database. " . $config['syserror'];
