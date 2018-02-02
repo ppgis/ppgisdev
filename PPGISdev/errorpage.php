@@ -29,10 +29,12 @@ else {
 
 $loggedin = false;
 session_start();
-if (!empty($_SESSION['sessionuname']) & ($msgtype != 'bad') & ($msgtype != 'success')) {
+if (!empty($_SESSION['sessionuname'])) {
     $loggedin = true;
     $displayname = $_SESSION['sessionuname'];
-    $message = "Hello $displayname!<br>".$message;
+    if (($msgtype != 'bad') & ($msgtype != 'success')) {
+        $message = "Hello $displayname!<br>" . $message;
+    }
 }
 else {
     $displayname = 'not logged in';
