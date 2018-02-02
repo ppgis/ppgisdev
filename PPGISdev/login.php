@@ -214,14 +214,14 @@ $displaycp = 'block';
         <input type="password"  name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
                placeholder="Password" title="use at least 6 of a-z A-z 0-9 - _ and no spaces">
     </div>
-        <p ><input type="submit" value='Submit' class="uq-emerald" style="text-align:center"></p>
+        <p class="centredtext" ><input type="submit" value='Submit' class="uq-emerald" style="text-align:center"></p>
     </form>
 
-    <div class="goto" ><a href="cprequest.php" style="display:<?php echo $displaycp?>">Forgotten Password?</a></div>
+    <div class="goto centredtext" ><a href="cprequest.php" style="display:<?php echo $displaycp?>">Forgotten Password?</a></div>
     <div style="background-color: white;width: 100%">
         <form method="post" action="login.php">
             <input type="hidden" name="guesty" value="<?php echo $testforguest?>">
-            <p><input class="uq-emerald" type="submit" value="Continue as Guest" id="guesty"></p>
+            <p class="centredtext"><input class="uq-emerald" type="submit" value="Continue as Guest" id="guesty"></p>
         </form>
     </div>
 </div>

@@ -155,21 +155,6 @@ if ($message != "") {//we have to go somewhere else
 
 <?php doheader($pagetitle) ?>
 <script type="text/javascript" src="/js/mapping.js"></script>
-<!--script type="text/javascript">
-    var largemap = true;
-    function checkitout(e){
-        var theotherid = e.id.replace('dummy','other');
-        var theother = document.getElementById(theotherid);
-        if (e.checked == false ){theother.value = '';theother.placeholder = 'Other (please specify)'}
-        else {theother.placeholder = 'Other (please specify)';}
-    }
-    function showmap(){
-        var themap = document.getElementById('map');
-        var theheight = themap.style.innerHeight;
-        if (largemap){themap.style.height = '40px';largemap = false;}
-        else {themap.style.height = '400px';largemap = true;}
-    }
-</script-->
 <body>
 <?php
 echo '<script type="text/javascript">';

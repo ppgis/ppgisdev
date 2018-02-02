@@ -67,7 +67,7 @@ switch ($msgtype){
 <div class="contentcontainer">
 
         <div class="error centredtext" id="signuperror"><?php echo $pagetitle.'<br>'.$message; ?></div>
-        <div class="lat-long">Please use the top bar to navigate to the page of your choice, or <br><a href="<?php echo($config['homepage'])?>">head to PPGIS home</a>.
+        <div class="lat-long centredtext">Please use the top bar to navigate to the page of your choice, or <br><a href="<?php echo($config['homepage'])?>">head to PPGIS home</a>.
 
 </div>
 

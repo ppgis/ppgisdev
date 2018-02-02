@@ -26,7 +26,7 @@
 }
 .contentcontainer{
     max-width: 500px;
-    text-align: center;
+    text-align: left;
     background-color: #FFFFFF;
     margin: auto;
     margin-top: 20px;
@@ -37,14 +37,14 @@
 }
 .homedialogue{
     width: 90%;
-    text-align: left;
+    text-align: center;
     font-style: italic;
     margin: auto;
     color: #444;
 }
 .dialogue{
     width: 90%;
-    text-align: left;
+    text-align: center;
     font-style: italic;
     margin: auto;
     color: #ababab;
@@ -213,8 +213,9 @@ form.smallform div.formtext{
     vertical-align:top;
 }
 form.smallform input {
-    min-width:100px;
+    min-width:43%;
     margin-left:10px;
+    max-width:50%;
 }
 form.smallform input.cbox {
     width:20px;
@@ -289,6 +290,10 @@ h3 {
 .darkbg a {
     color: ivory;
     text-decoration: none;
+}
+ul {
+    padding-left: 0px;
+    list-style-position: inside;
 }
 nav  ul {
     list-style-type: none;
@@ -402,6 +407,10 @@ input[type=password] {
     border: none;
     border-bottom: 1px solid #62a1cd;
 }
+input[type=email] {
+    border: none;
+    border-bottom: 1px solid #62a1cd;
+}
 /*some survey styles*/
 .surveyform {display: block; padding-bottom: 10px;padding-top: 10px;}
 .surveyform label span { display:inline-block;width:150px;min-width:150px;font-size:90%;text-align:right;float:left;padding-top: 3px;margin-right:10px;}
@@ -412,4 +421,4 @@ input[type=password] {
 /* some general form styles*/
 .surveyform div {display: inline-block;width: 180px;}
 .formtext {width: 150px;}
-#exitsubmit {display: block;text-align: center;width:100%}
+#exitsubmit {margin: auto;max-width:150px;}

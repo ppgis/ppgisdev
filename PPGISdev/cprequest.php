@@ -136,11 +136,11 @@ $pagetitle = "Request password change";
     <div class="dialogue">
         <div class="error" id="signuperror"><?php echo $errorMessage ?></div>
     </div>
-    <form method="post" action="cprequest.php" onsubmit="return validate(this,'e')">
-        <div class="formtext">Enter the email address of your PPGIS account:</div>
-        <input type="email" class="lat-long" name="email" required="required"
+    <form method="post" action="cprequest.php" onsubmit="return validate(this,'e')" class='smallform'>
+        <div class="formtext" style="vertical-align: baseline;">Enter the email address of your PPGIS account:</div>
+        <input type="email"  name="email" required="required"
                placeholder = "email@address">
-        <p><input type="submit" value='Submit'></p>
+        <p class="centredtext"><input type="submit" value='Submit' class="uq-emerald" style="text-align:center"></p>
     </form>
 
 </div>

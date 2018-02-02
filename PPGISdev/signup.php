@@ -147,21 +147,21 @@ if ($message != "") {//we have to go somewhere else
         <li>password should not be the same as your username!</li>
         <li>email address will be used for password recovery</li>
     </ul></div>
-        <form method="post" action="signup.php" onsubmit="return validate(this,'upre')">
+        <form method="post" action="signup.php" onsubmit="return validate(this,'upre')" class="smallform">
             <div class="formtext">Create a username:</div>
-            <input type="text" class="lat-long" name="username" required="required"
+            <input type="text"  name="username" required="required"
                    placeholder="Username" pattern="[a-zA-Z0-9_-]{3,25}" title="at least 3 characters from a-z A-z 0-9 - _ and no spaces">
-            <div class="formtext">and a password:<br>
+            <div class="formtext">and a password:
                     <button type="button" id="shbutton" tabindex="-1" onclick="showhide('shbutton',['password','retype_password'])">(show)</button></div>
-            <input type="password" class="lat-long" name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
+            <input type="password"  name="password" pattern="[a-zA-Z0-9_-]{6,}" required="required"
                    placeholder="Password" title="use at least 6 of a-z A-z 0-9 - _ and no spaces">
             <div class="formtext">retype the password:</div>
-            <input type="password" class="lat-long" name="retype_password" required="required">
+            <input type="password"  name="retype_password" required="required">
             <p>
             <div class="formtext">(Optional) email address</div>
-            <input type="email" class="lat-long" name="email"
+            <input type="email"  name="email"
                    placeholder = "email@address">
-            <p><input type="submit" value='Submit'></p>
+            <p class="centredtext" ><input type="submit" value='Submit' class="uq-emerald" style="text-align:center"></p>
         </form>
     <!--TODO put a back to home link-->
     </div>
