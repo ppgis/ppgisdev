@@ -1,13 +1,26 @@
-<svg width="40" height="42" xmlns="http://www.w3.org/2000/svg">
+<svg width="33" height="32" xmlns="http://www.w3.org/2000/svg">
  <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
 
  <g>
   <title>background</title>
+  <rect x="-1" y="-1" width="35" height="34" id="canvas_background" fill="#fff"/>
+  <g id="canvasGrid" display="none">
+   <rect id="svg_1" width="580" height="400" x="1" y="2.36316" stroke-width="0" fill="url(#gridpattern)"/>
+  </g>
  </g>
  <g>
   <title>Layer 1</title>
-  <ellipse stroke="#000" ry="17.874882" rx="17.874882" id="svg_16" cy="21.000001" cx="20" stroke-opacity="null" stroke-width="0" fill="#0000bf"/>
-  <text stroke="#000" transform="matrix(0.9323297142982482,0,0,1.107142091440984,1.04020061382613,-3.5722262144633987) " font-weight="bold" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="29" id="svg_15" y="32.29793" x="11.499971" stroke-opacity="null" stroke-width="0" fill="#ffffff">?</text>
-  <path stroke="#000" transform="rotate(30 34.88743591308597,33.18734741210937) " id="svg_18" d="m30.718891,38.776417c0,0 8.087748,-4.008679 8.330989,-3.54614c0.243241,0.46254 -6.871545,-7.554818 -6.901984,-7.631998c0.030439,0.07718 -1.429004,11.178137 -1.429004,11.178137z" stroke-opacity="null" stroke-width="0" fill="#0000bf"/>
+  <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+  <g stroke="null" id="svg_12">
+   <g stroke="null" id="svg_10" transform="matrix(0.9122053620812399,0,0,0.8678979094712093,0.12016780341657571,-0.9396506198472496) ">
+    <title stroke="null" transform="translate(1.4954239130020142,0) translate(-1.4954339265823364,0) translate(-0.27215319871902466,0) ">background</title>
+   </g>
+   <g stroke="null" id="svg_11" transform="matrix(0.9122053620812399,0,0,0.8678979094712093,0.12016780341657571,-0.9396506198472496) ">
+    <title stroke="null" transform="translate(1.4954239130020142,0) translate(-1.4954339265823364,0) translate(-0.27215319871902466,0) ">Layer 1</title>
+    <ellipse stroke="#000" ry="17.87488" rx="17.87488" id="svg_8" cy="19.51263" cx="17.743147" stroke-opacity="null" stroke-width="0" fill="#0000bf"/>
+    <text stroke="#000" transform="matrix(0.9323297142982482,0,0,1.107142091440984,1.04020061382613,-3.5722262144633987) " font-weight="bold" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="29" id="svg_7" y="30.9545" x="9.079313" stroke-opacity="null" stroke-width="0" fill="#ffffff">?</text>
+    <path stroke="#000" transform="rotate(30 32.63057708740235,31.69997596740722) " id="svg_6" d="m28.462037,37.28905c0,0 8.08775,-4.00868 8.33099,-3.54614c0.24324,0.46254 -6.87154,-7.55482 -6.90198,-7.632c0.03044,0.07718 -1.42901,11.17814 -1.42901,11.17814z" stroke-opacity="null" stroke-width="0" fill="#0000bf"/>
+   </g>
+  </g>
  </g>
 </svg>

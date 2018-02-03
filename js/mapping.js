@@ -86,10 +86,9 @@ function placeMarker(location,theurl,theiconID) {
         nmarker: nmarkers
     };
     if (!staticmap) {
-        markerOptions['title'] = 'Double-click to remove',
-            markerOptions['draggable'] = true
+        markerOptions['title'] = 'Double-click to remove';
+            markerOptions['draggable'] = true;
     }
-    ;
     var themarker = new google.maps.Marker(markerOptions);
     googlemarkers[nmarkers] = themarker;
     //check that it worked?

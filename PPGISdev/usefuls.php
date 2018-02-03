@@ -161,3 +161,22 @@ function phpAlertandgo($msg,$page){
 function ee ($string_message) {
     $_SERVER['SERVER_PROTOCOL'] ? print "$string_message<br />" : print "$string_message\n";
 }
+
+function popupandgo($alerttype){
+    $alerts = array('backfromsave'=>'A draft has been saved','loadingsaved'=>'Loading saved markers.');
+    $images = array('backfromsave'=>'backfromsave.svg','loadingsaved'=>'upload.svg');
+$stuff=<<<END
+   <div class="alertcard" id='alertdiv' onmouseover="hideit();">
+   <div class="alertimage">
+  <img width='64px' src="/images/icons/$images[$alerttype]" alt="Uploading" style="width:100%">
+  </div>
+  <div class="alertcontainer">
+    <h4>$alerts[$alerttype]</h4> 
+  </div>
+   </div>
+END;
+    echo $stuff;
+    //document.getElementById('alertdiv').display = 'block';
+  //document.getElementById('alertdiv').innerHTML = text;
+  //setTimeout(function(){hideit()},timelength);
+}

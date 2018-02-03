@@ -109,7 +109,7 @@ if ($mysqli) { //got database
         //the user may have icons saved in either the temp or the permanent table
         $oldusericons = getusericons($mysqli, $uID, $icontourl);
         $nusericons = sizeof($oldusericons);
-        if ($nusericons == 0) $oldusericons = NULL;
+        if ($nusericons == 0) $oldusericons = 'null';
         //
 
     } else {
@@ -129,24 +129,32 @@ if ($message != "") {//we have to go somewhere else
     $errorPageMessage = "Location: errorpage.php?message=" . $message . "&msgtype=" . $msgtype;
     header($errorPageMessage);
 }
+//some alerts may be required
+$alert = false;
+
+if (($backfromsave)){
+   $alert = 'backfromsave';//echo "alert('A draft of your map has been saved.');";
+}
+elseif (($hassaved) & ($nusericons > 0)){
+   $alert = 'loadingsaved';
+}
+
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <?php doheader($pagetitle) ?>
+    <?php doheadermin($pagetitle) ?>
     <script type="text/javascript" src="/js/mapping.js"></script>
+    <?php if ($alert) {
+        echo '<script type="text/javascript" src="/js/popups.js"></script>';
+        echo '<link rel="stylesheet" type="text/css" href="/css/popup.css">';
+    } ?>
 </head>
 <body>
 <?php
 echo '<script type="text/javascript">';
 echo "staticmap = false;";
-if (($backfromsave) & ($nicons > 0)){
-    echo "alert('A draft of your map has been saved.');";
-}
-elseif (($hassaved) & ($nicons > 0)){
-    echo "alert('Loading saved markers.');";
-}
 echo "var oldusericons = $oldusericons;";
 echo "</script>";
 ?>
@@ -165,36 +173,36 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
 ";
         }?>
     </div>
-
+<?php if ($alert) popupandgo($alert);?>
 
 <div style="position: relative;width: 100%">
 
 
     <div class="mappy2" id="map"></div>
     <!--LHS popout section follows-->
-    <div class="LHS" id="LHSbig" style="display: block;">
+    <div class="LHS shadowy" id="LHSbig" style="display: block;">
        <img src="/images/icons/help.svg" width="32 px" title="Help" onclick="gethelp()" class="box"><br>
          <img  src="/images/icons/save.svg" width="32 px" title="Save Map" onclick="submitjson('temp');" class="box"><br>
          <img src="/images/icons/fin.svg" width="32 px" title="Finished: Save and Submit" onclick="submitjson('final');" class="box"><br>
          <img src="/images/icons/delete.svg" title="Remove all markers" height="32 px" width="32 px" onclick="removeall()" class="box"><br>
         <div class="arrowleft"><img src="arrowin.png" onclick="hideele('LHS')" style="display: block;"/></div>
     </div>
-    <div class="LHS" id="LHSsmall" style="display: none;">
-    <div class="arrowleft"><img src="arrowout.png" onclick="unhideele('LHS')" style="display: block;"/></div>
+    <div class="LHS shadowy" id="LHSsmall" style="display: none;">
+    <div class="arrowleft shadowy"><img src="arrowout.png" onclick="unhideele('LHS')" style="display: block;"/></div>
         </div>
     <!--RHS popout section follows-->
-    <div class="RHS" id="RHSbig" style="display: none;">
+    <div class="RHS shadowy" id="RHSbig" style="display: none;">
       Markers Placed:
         <div class="rT" id="iconlist"></div>
         <div class="arrowright"><img src="arrowout.png"  title="close list" onclick="hideele('RHS')"/></div>
     </div>
-    <div class="RHS" id="RHSsmall" display = "block">
-        <div class="arrowright"><img src="arrowin.png" title="list your markers" onclick="unhideele('RHS')"/></div>
+    <div class="RHS shadowy" id="RHSsmall" display = "block">
+        <div class="arrowright shadowy"><img src="arrowin.png" title="list your markers" onclick="unhideele('RHS')"/></div>
     </div>
 
-        <!--div class="mapcontainer" style="position: relative;display:table-cell;">
+    <!--div class="mapcontainer" style="position: relative;display:table-cell;">
 
-        </div-->
+    </div-->
        <form id="markerForm" name="markerForm" method="post" action="savemap.php">
 					<input type="hidden" name="markersjson" id="markersjson" value="">
            <input type="hidden" name="savetype" id="savetype" value="">
@@ -209,5 +217,8 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
     echo "The current timeout is ".ini_get('session.gc_maxlifetime');?-->
     <?php dofooter() ?>
 </span>
+<!--script>
+   window.onload= setTimeout(function(){hideit();},2000);
+</script-->
 </body>
 </html>

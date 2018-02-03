@@ -123,7 +123,7 @@ if ($mysqli) { //got database
             //the user may have icons saved in either the table
             $oldusericons = getusericons($mysqli, $uID, $icontourl);
             $nusericons = sizeof($oldusericons);
-            if ($nusericons == 0) $oldusericons = null;
+            if ($nusericons == 0) $oldusericons = 'null';
 
             //
         }
@@ -149,13 +149,14 @@ if ($message != "") {//we have to go somewhere else
     header($errorPageMessage);
 }
 
+
 ?>
 <!DOCTYPE html>
 <html>
 
 <?php doheader($pagetitle) ?>
-<script type="text/javascript" src="/js/mapping.js"></script>
 <body>
+<script type="text/javascript" src="/js/mapping.js"></script>
 <?php
 echo '<script type="text/javascript">';
 echo "var oldusericons = $oldusericons;";

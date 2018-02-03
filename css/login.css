@@ -153,8 +153,8 @@
     overflow:visible;
     min-height: 400px;
     text-align: center;
-    opacity: .95;
-    border: 1px solid #aaaaaa;
+    /*opacity: .95;
+    border: 1px solid #aaaaaa;*/
     background-color: #ffffff;
 }
 .RHS {
@@ -167,7 +167,7 @@
     overflow:visible;
     min-height: 400px;
     text-align: right;
-    border: 1px solid #aaaaaa;
+    /*border: 1px solid #aaaaaa;*/
     background-color: #ffffff;
 }
 .arrowleft {
@@ -184,10 +184,11 @@
     width: 0px;
     overflow:visible;
 }
-
+.shadowy{
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
 div[class^='arrow'] img{
-    border: 1px solid rebeccapurple;
-    opacity: 1.0;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
 }
 
 .lat-long {
@@ -422,3 +423,4 @@ input[type=email] {
 .surveyform div {display: inline-block;width: 180px;}
 .formtext {width: 150px;}
 #exitsubmit {margin: auto;max-width:150px;}
+

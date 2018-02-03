@@ -56,3 +56,37 @@
     to {opacity:1 ;}
 }
 /* end POPUP stuff from W3schools */
+
+#alertdiv{
+    width: 10%;
+    text-align: center;
+    background-color: #fefefe;
+    position:absolute;
+    top:160px;
+    left:160px;
+    z-index: 20;
+    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    color: #7e7e7e;
+}
+
+.alertcard {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+/* On mouse-over, add a deeper shadow */
+.alertcard:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+.alertimage {
+   padding: 2px 1em;
+}
+
+/* Add some padding inside the card container */
+.alertcontainer {
+    background-color: #540060;
+    color: white;
+    padding: 2px 16px;
+}
+/*end card stuff from W3schools*/
