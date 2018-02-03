@@ -53,6 +53,10 @@
     color: red;
     margin: 20px;
 }
+.notanerror {
+    color: #247fc0;
+    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+}
 .mapcontentcontainer{
     width: 1000px;
     margin: auto;

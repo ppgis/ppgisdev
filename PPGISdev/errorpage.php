@@ -57,15 +57,19 @@ else{
 switch ($msgtype){
     case 'bad':
         $pagetitle = "Unrecoverable error detected";
+        $errorclass = 'error';
         break;
     case 'success':
         $pagetitle = "Success!";
+        $errorclass = 'notanerror';
         break;
     case 'nice':
         $pagetitle = "Alert";
+        $errorclass = 'notanerror';
         break;
     default:
         $pagetitle = "An error has occurred";
+        $errorclass = 'error';
         break;
 }
 
@@ -81,7 +85,7 @@ switch ($msgtype){
 
 <div class="contentcontainer">
 
-        <div class="error centredtext" id="signuperror"><?php echo $pagetitle.'<br>'.$message; ?></div>
+    <?php echo "<div class='$errorclass centredtext' id='signuperror'><h3>$pagetitle</h3>$message</div>"; ?>
         <div class="lat-long centredtext">Please use the top bar to navigate to the page of your choice, or <br><a href="<?php echo($thepage)?>">head to PPGIS <?php echo($thename)?></a>.
 
 </div>
