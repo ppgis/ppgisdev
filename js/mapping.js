@@ -143,12 +143,20 @@ function findlocation(){
         autocomplete = new google.maps.places.Autocomplete(input);
         autocomplete.bindTo('bounds', map);
 
+        var targetImage = {
+            url: '/images/icons/target.png',
+            // This marker is 32 pixels wide by 32 pixels high.
+            size: new google.maps.Size(32, 32),
+            // The origin for this image is (0, 0).
+            origin: new google.maps.Point(0, 0),
+            // The anchor for this image is in the middle.
+            anchor: new google.maps.Point(16,16)
+        };
+
         map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
         pacmarker = new google.maps.Marker({
             map: map,
-            icon: {
-                url: '/images/icons/target.png'
-            }
+            icon: targetImage
         });
         autocomplete.addListener('place_changed', function () {
 
