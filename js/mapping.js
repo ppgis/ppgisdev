@@ -18,6 +18,8 @@ var swbound;
 var nebound;
 var bclistener;
 var staticmap = true;
+var locationBar = false;
+var locationBarVisible = false;
 
 function myMap() {
     var mapCanvas = document.getElementById("map");
@@ -129,6 +131,63 @@ function dropmarker(){
     if (isinmap(mouseLatLng)&canplace) {
         placeMarker(markerLatLng);
         if (document.getElementById('RHSbig').style.display=='block') anotherline();
+    }
+
+}
+
+function findlocation(){
+    if (!locationBar) {//then initialise
+        locationBar = true;
+        var input = document.getElementById('pac-input');
+        input.style.display = 'block';
+        autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo('bounds', map);
+
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+        pacmarker = new google.maps.Marker({
+            map: map,
+            icon: {
+                url: '/images/icons/target.png'
+            }
+        });
+        autocomplete.addListener('place_changed', function () {
+
+            var place = autocomplete.getPlace();
+            if (!place.geometry) {
+                return;
+            }
+
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);
+            }
+
+            // Set the position of the marker using the place ID and location.
+            pacmarker.setPlace({
+                placeId: place.place_id,
+                location: place.geometry.location
+            });
+            pacmarker.setVisible(true);
+
+        });
+    }
+
+
+    if (!locationBarVisible){
+        locationBarVisible = true;
+        var input = document.getElementById('pac-input');
+        input.style.display = 'block';
+        document.getElementById('targeticon').title="Hide Location Finder"
+    }
+    else {
+        locationBarVisible = false;
+        var input = document.getElementById('pac-input');
+        input.style.display = 'none';
+        input.value = '';
+        pacmarker.setVisible(false);
+        document.getElementById('targeticon').title="Find Location"
     }
 
 }

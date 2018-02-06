@@ -58,12 +58,12 @@
 /* end POPUP stuff from W3schools */
 
 #alertdiv{
-    width: 10%;
+    width: 150px;
     text-align: center;
     background-color: #fefefe;
     position:absolute;
-    top:160px;
-    left:160px;
+    top:100px;
+    left:45%;
     z-index: 20;
     font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
     color: #7e7e7e;

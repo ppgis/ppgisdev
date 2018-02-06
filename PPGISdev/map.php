@@ -147,9 +147,16 @@ elseif (($hassaved) & ($nusericons > 0)){
     <?php doheadermin($pagetitle) ?>
     <script type="text/javascript" src="/js/mapping.js"></script>
     <?php if ($alert) {
-        echo '<script type="text/javascript" src="/js/popups.js"></script>';
+        $divToHide = 'alertdiv';
         echo '<link rel="stylesheet" type="text/css" href="/css/popup.css">';
-    } ?>
+    } else {
+        $divToHide = 'loadingdiv';
+    }
+        echo '<script type="text/javascript">';
+        echo "function hideSomething(){document.getElementById('$divToHide').style.display = 'none';}";
+        echo "window.onload = setTimeout(function(){hideSomething();},2000);";
+        echo '</script>';
+    ?>
 </head>
 <body>
 <?php
@@ -173,14 +180,16 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
 ";
         }?>
     </div>
-<?php if ($alert) popupandgo($alert);?>
+<?php if ($alert) popupandgo($alert); else showloading();?>
 
 <div style="position: relative;width: 100%">
 
-
+    <input id="pac-input" class="controls" type="text"
+       placeholder="Enter a location" style="display:none">
     <div class="mappy2" id="map"></div>
     <!--LHS popout section follows-->
     <div class="LHS shadowy" id="LHSbig" style="display: block;">
+        <img id='targeticon' src="/images/icons/target.svg" width="32 px" title="Find Location" onclick="findlocation()" class="box"><br>
        <img src="/images/icons/help.svg" width="32 px" title="Help" onclick="gethelp()" class="box"><br>
          <img  src="/images/icons/save.svg" width="32 px" title="Save Map" onclick="submitjson('temp');" class="box"><br>
          <img src="/images/icons/fin.svg" width="32 px" title="Finished: Save and Submit" onclick="submitjson('final');" class="box"><br>
@@ -208,7 +217,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
            <input type="hidden" name="savetype" id="savetype" value="">
        </form>
     <!--/div-->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap&libraries=places"></script>
 
     <!--?php echo "debug values: <br>session status is ".session_status()."<br>";
     echo "session name is ".session_name()."<br>";
@@ -217,8 +226,8 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
     echo "The current timeout is ".ini_get('session.gc_maxlifetime');?-->
     <?php dofooter() ?>
 </span>
-<!--script>
-   window.onload= setTimeout(function(){hideit();},2000);
-</script-->
+<script>
+
+</script>
 </body>
 </html>

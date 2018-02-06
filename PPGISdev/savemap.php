@@ -74,7 +74,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson'])) && 
     else{
         //Alert and go back to home. There is a message there about needing to be logged in
         //should there be an alert?
-        phpAlertandgo("Oh no! Your session expired and the data has been lost.",'login');
+        phpAlertandgo("Oh no! Your session expired and any unsaved data has been lost.",'login');
     }
 
 

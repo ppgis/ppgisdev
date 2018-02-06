@@ -166,7 +166,7 @@ function popupandgo($alerttype){
     $alerts = array('backfromsave'=>'A draft has been saved','loadingsaved'=>'Loading saved markers.');
     $images = array('backfromsave'=>'backfromsave.svg','loadingsaved'=>'upload.svg');
 $stuff=<<<END
-   <div class="alertcard" id='alertdiv' onmouseover="hideit();">
+   <div class="alertcard" id='alertdiv' onmouseover="hideSomething();">
    <div class="alertimage">
   <img width='64px' src="/images/icons/$images[$alerttype]" alt="Uploading" style="width:100%">
   </div>
@@ -179,4 +179,7 @@ END;
     //document.getElementById('alertdiv').display = 'block';
   //document.getElementById('alertdiv').innerHTML = text;
   //setTimeout(function(){hideit()},timelength);
+}
+function showloading(){//show loading gif
+    echo '<div id="loadingdiv"><img src="/images/icons/loading.gif" style="position:absolute; z-index:-2;top:220px;left:50%"></div>';
 }
