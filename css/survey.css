@@ -1,0 +1,58 @@
+form .statement {
+    display:block;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 30px 0 0 4.25%;
+    margin-bottom:10px;
+}
+form .likert {
+    list-style:none;
+    width:100%;
+    margin:0;
+    padding:0 0 35px;
+    display:block;
+    border-bottom:2px solid #efefef;
+}
+form .likert:last-of-type {border-bottom:0;}
+form .likert:before {
+    content: '';
+    position:relative;
+    top:10px;
+    display:block;
+    background-color:#efefef;
+    height:4px;
+    width:78%;
+}
+form .likert.n4:before {
+    left:9.5%;
+}
+
+form .likert li {
+    display:inline-block;
+    text-align:center;
+    vertical-align: top;
+}
+
+form .likert.n4 li {
+    width:24%;
+}
+
+form .likert li input[type=radio] {
+    display:block;
+    position:relative;
+    top:0;
+    margin: auto;
+    height: 16px;
+}
+form .likert li span {width:100%;}
+ul .likert li input {margin: auto;}
+form.smallform div.longformtext{
+    padding: 2px;
+    padding-right: 0px;
+    margin-bottom: 10px;
+    margin-top: 4px;
+    display: inline-block;
+    width: 98%;
+    text-align:center;
+    vertical-align:top;
+}

@@ -145,16 +145,16 @@ elseif (($hassaved) & ($nusericons > 0)){
 <html>
 <head>
     <?php doheadermin($pagetitle) ?>
+    <link rel="stylesheet" type="text/css" href="/css/popup.css">
     <script type="text/javascript" src="/js/mapping.js"></script>
     <?php if ($alert) {
         $divToHide = 'alertdiv';
-        echo '<link rel="stylesheet" type="text/css" href="/css/popup.css">';
     } else {
         $divToHide = 'loadingdiv';
     }
         echo '<script type="text/javascript">';
         echo "function hideSomething(){document.getElementById('$divToHide').style.display = 'none';}";
-        echo "window.onload = setTimeout(function(){hideSomething();},2000);";
+        echo "window.onload = setTimeout(function(){hideSomething();},1000);";
         echo '</script>';
     ?>
 </head>
@@ -185,11 +185,16 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
 <div style="position: relative;width: 100%">
 
     <input id="pac-input" class="controls" type="text"
-       placeholder="Enter a location" style="display:none">
+       placeholder="Enter a location." style="display:none">
+    <div id="drawRoadPopup" class="alertcard" style="display:none;"><div class="alertcontainer">Click to create points along the road.<br>Double-click to finish and edit.</div>
+        <div class="alertimage" style="padding: 8px">
+            <button onclick="restartRoad()" class="btn">Restart</button><button onclick="drawRoad()" class="btn">I'm done!</button></div></div>
+
     <div class="mappy2" id="map"></div>
     <!--LHS popout section follows-->
     <div class="LHS shadowy" id="LHSbig" style="display: block;">
-        <img id='targeticon' src="/images/icons/target.svg" width="32 px" title="Find Location" onclick="findlocation()" class="box"><br>
+        <img id='targeticon' src="/images/icons/target.svg" width="32 px" title="Search for an address or place" onclick="findlocation()" class="box"><br>
+        <img id='roadicon' src="/images/icons/road.svg" width="32 px" title="Add a Road" class="box" onclick = "drawRoad()"><br>
        <img src="/images/icons/help.svg" width="32 px" title="Help" onclick="gethelp()" class="box"><br>
          <img  src="/images/icons/save.svg" width="32 px" title="Save Map" onclick="submitjson('temp');" class="box"><br>
          <img src="/images/icons/fin.svg" width="32 px" title="Finished: Save and Submit" onclick="submitjson('final');" class="box"><br>
@@ -217,7 +222,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
            <input type="hidden" name="savetype" id="savetype" value="">
        </form>
     <!--/div-->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap&libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap&libraries=places,drawing"></script>
 
     <!--?php echo "debug values: <br>session status is ".session_status()."<br>";
     echo "session name is ".session_name()."<br>";

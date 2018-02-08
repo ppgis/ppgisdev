@@ -153,8 +153,10 @@ if ($message != "") {//we have to go somewhere else
 ?>
 <!DOCTYPE html>
 <html>
-
-<?php doheader($pagetitle) ?>
+<head>
+    <?php doheadermin($pagetitle) ?>
+    <link rel="stylesheet" type="text/css" href="/css/survey.css">
+</head>
 <body>
 <script type="text/javascript" src="/js/mapping.js"></script>
 <?php

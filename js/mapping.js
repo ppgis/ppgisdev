@@ -20,14 +20,27 @@ var bclistener;
 var staticmap = true;
 var locationBar = false;
 var locationBarVisible = false;
+var userpolyline = null;
+var roadBarVisible = false;
+var havearoad = false;
 
 function myMap() {
     var mapCanvas = document.getElementById("map");
     var myCenter=new google.maps.LatLng(-27,153);
     //todo get bounds
-    var mapOptions = {center: myCenter, zoom: 10, fullscreenControl: false};
+    var mapOptions = {
+        center: myCenter,
+        zoom: 10,
+        fullscreenControl: false,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position: google.maps.ControlPosition.BOTTOM_LEFT
+        }
+    };
     map = new google.maps.Map(mapCanvas, mapOptions);
-    //todo have a loading warning
+
+
     if (oldusericons != null){
         var minlat = oldusericons[0].lat;
         var maxlat = oldusericons[0].lat;
@@ -89,7 +102,7 @@ function placeMarker(location,theurl,theiconID) {
     };
     if (!staticmap) {
         markerOptions['title'] = 'Double-click to remove';
-            markerOptions['draggable'] = true;
+        markerOptions['draggable'] = true;
     }
     var themarker = new google.maps.Marker(markerOptions);
     googlemarkers[nmarkers] = themarker;
@@ -135,69 +148,179 @@ function dropmarker(){
 
 }
 
+
+
 function findlocation(){
+    if (roadBarVisible) hideRoadBar();
     if (!locationBar) {//then initialise
-        locationBar = true;
-        var input = document.getElementById('pac-input');
-        input.style.display = 'block';
-        autocomplete = new google.maps.places.Autocomplete(input);
-        autocomplete.bindTo('bounds', map);
-
-        var targetImage = {
-            url: '/images/icons/target.png',
-            // This marker is 32 pixels wide by 32 pixels high.
-            size: new google.maps.Size(32, 32),
-            // The origin for this image is (0, 0).
-            origin: new google.maps.Point(0, 0),
-            // The anchor for this image is in the middle.
-            anchor: new google.maps.Point(16,16)
-        };
-
-        map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
-        pacmarker = new google.maps.Marker({
-            map: map,
-            icon: targetImage
-        });
-        autocomplete.addListener('place_changed', function () {
-
-            var place = autocomplete.getPlace();
-            if (!place.geometry) {
-                return;
-            }
-
-            if (place.geometry.viewport) {
-                map.fitBounds(place.geometry.viewport);
-            } else {
-                map.setCenter(place.geometry.location);
-                map.setZoom(17);
-            }
-
-            // Set the position of the marker using the place ID and location.
-            pacmarker.setPlace({
-                placeId: place.place_id,
-                location: place.geometry.location
-            });
-            pacmarker.setVisible(true);
-
-        });
+       initLocationBar();
     }
-
 
     if (!locationBarVisible){
-        locationBarVisible = true;
-        var input = document.getElementById('pac-input');
-        input.style.display = 'block';
-        document.getElementById('targeticon').title="Hide Location Finder"
+        showLocationBar();
     }
     else {
-        locationBarVisible = false;
-        var input = document.getElementById('pac-input');
-        input.style.display = 'none';
-        input.value = '';
-        pacmarker.setVisible(false);
-        document.getElementById('targeticon').title="Find Location"
+        hideLocationBar();
     }
 
+}
+function initLocationBar(){
+    locationBar = true;
+
+    var pac_input = document.getElementById('pac-input');
+    pac_input.style.display = 'block';
+
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(pac_input);
+
+
+    autocomplete = new google.maps.places.Autocomplete(pac_input);
+    setTimeout(function() {
+        pac_input.focus();
+    }, 500);
+
+    autocomplete.bindTo('bounds', map);
+
+    var targetImage = {
+        url: '/images/icons/target.png',
+        // This marker is 32 pixels wide by 32 pixels high.
+        size: new google.maps.Size(32, 32),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is in the middle.
+        anchor: new google.maps.Point(16,16)
+    };
+
+
+    pacmarker = new google.maps.Marker({
+        map: map,
+        icon: targetImage
+    });
+    autocomplete.addListener('place_changed', function () {
+
+        var place = autocomplete.getPlace();
+        if (!place.geometry) {
+            return;
+        }
+
+        if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+        } else {
+            map.setCenter(place.geometry.location);
+            map.setZoom(17);
+        }
+
+        // Set the position of the marker using the place ID and location.
+        pacmarker.setPlace({
+            placeId: place.place_id,
+            location: place.geometry.location
+        });
+        pacmarker.setVisible(true);
+
+    });
+}
+function hideLocationBar(){
+    locationBarVisible = false;
+    var pacinput = document.getElementById('pac-input');
+    pacinput.style.display = 'none';
+    pacinput.value = '';
+    pacmarker.setVisible(false);
+    document.getElementById('targeticon').title="Search for an address or place"
+}
+function showLocationBar(){
+    locationBarVisible = true;
+    var pacinput = document.getElementById('pac-input');
+    pacinput.style.display = 'block';
+    document.getElementById('targeticon').title="Hide Location Finder"
+    pacinput.focus();
+}
+
+
+
+function drawRoad(){
+    if (locationBarVisible) hideLocationBar();
+    if (!havearoad){//initialise
+        initRoadBar();
+    }
+    if (!roadBarVisible){
+        showRoadBar();
+    }
+    else {
+        hideRoadBar();
+    }
+}
+function restartRoad(){
+    if (havearoad) {
+        if (userpolyline !== null) userpolyline.setMap(null);
+        userpolyline = null;
+        drawingManager.setOptions({
+            drawingControl: true,
+            drawingMode: google.maps.drawing.OverlayType.POLYLINE
+        });
+    }
+}
+
+function initRoadBar(){
+    havearoad = true;
+    drawingManager = new google.maps.drawing.DrawingManager({
+        drawingMode: google.maps.drawing.OverlayType.POLYLINE,
+        drawingControl: false,
+        drawingControlOptions: {
+            //position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: [ ]
+        },
+        polylineOptions: {
+            strokeColor: '#ff0000',
+            strokeOpacity: 0.6,
+            strokeWeight: 2,
+            clickable: true,
+            editable: true,
+            zIndex: 1
+        }
+    });
+    drawingManager.setMap(map);
+    google.maps.event.addListener(drawingManager, 'overlaycomplete', function(polygon) {
+        //coordinatesArray = polygon.overlay.getPath().getArray();
+        // alert(coordinatesArray);
+        userpolyline = polygon;
+    });
+    google.maps.event.addListener(drawingManager, 'polylinecomplete', function(polygon) {
+        userpolyline = polygon;
+        drawingManager.setOptions({
+            drawingControl: false,
+            drawingMode: null
+        });
+    });
+
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById('drawRoadPopup'));
+}
+function hideRoadBar(){
+    if (userpolyline !== null) {
+        var len = userpolyline.getPath().getLength();
+        if (len > 0) document.getElementById('roadicon').title = 'Edit or Redraw your road';
+        else document.getElementById('roadicon').title = 'Add a road';
+    }
+    else document.getElementById('roadicon').title = 'Add a road';
+    roadBarVisible = false;
+    if (userpolyline!==null) userpolyline.setOptions({editable: false});
+    roadBar = document.getElementById('drawRoadPopup');
+    roadBar.style.display="none";
+    drawingManager.setOptions({
+        drawingControl: false,
+        drawingMode: null
+    });
+    drawingManager.setMap(null);
+}
+function showRoadBar(){
+    document.getElementById('roadicon').title = 'Finish drawing';
+    drawingManager.setMap(map);
+    roadBarVisible = true;
+    roadBar = document.getElementById('drawRoadPopup');
+    roadBar.style.display="block";
+    if (userpolyline!==null) userpolyline.setOptions({editable: true});
+    else drawingManager.setOptions({
+        drawingControl: true,
+        drawingMode: google.maps.drawing.OverlayType.POLYLINE
+    });
 }
 
 function makemarkerlist(){
@@ -404,6 +527,7 @@ function removeall() {
         delete googlemarkers[markerID];
     }
     if (document.getElementById('RHSbig').style.display==='block') anotherline();
+    restartRoad();
 }
 var largemap = true;
 function checkitout(e){

@@ -26,19 +26,25 @@ function dosurvey($questions,$oldsurveyresult){
     foreach ($questions as $num=>$question){
         $thetext = $question['qtext'];
         //echo "<p>";
-        echo "\n<div class='formtext'>$thetext</div>";
+
         //echo "\n<label><span>$thetext</span>";
         //echo "</label>";
         $name = "Q$num";
         $thetype = $question['answertype'];
-        echo "<div class='surveyformanswer'>\n";
+
+        if ($thetype == 'radio')
+            echo "\n<div class='longformtext'>$thetext</div>";
+        else {
+            echo "\n<div class='formtext'>$thetext</div>";
+            echo "<div class='surveyformanswer'>\n";
+        }
         switch($thetype){
             case 'checkbox':
                 array_walk($question['values'],"trim_walk");
                 $othervalue = '';
                 if (isset($oldsurveyresult[$name])){
                     $tempvalues = explode('|',$oldsurveyresult[$name]);
-                    foreach ($tempvalues as $tempvalue){
+                    foreach ($tempvalues as $tempvalue){//search for Other value that wasn't in default list
                         if (!in_array($tempvalue,$question['values']))$othervalue = $tempvalue;
                     }
                 }
@@ -93,14 +99,35 @@ function dosurvey($questions,$oldsurveyresult){
                 }
                 echo "</select>";
                 break;
+            case 'radio':
+                array_walk($question['values'],"trim_walk");
+                $nvalues = sizeof($question['values']);
+                $classn = 'n'.$nvalues;
+                $othervalue = '';
+                if (isset($oldsurveyresult[$name])){
+                    $tempvalues = explode('|',$oldsurveyresult[$name]);
+                }
+                echo "<br>\n<ul class='likert $classn'>\n";
+                foreach ($question['values'] as $thevalue) {
+                    echo "\n <li>\n";
+                    $thevalue = trim($thevalue);
+                    if (isset($tempvalues)){
+                        $checked = in_array($thevalue,$tempvalues)?'checked':'';}
+                    else $checked = '';
+
+                    echo "<input type='radio' name='$name' value='$thevalue' $checked>";
+                    echo "<span>$thevalue</span>";
+                    echo "\n </li>\n";
+
+                }
+                echo "\n </ul>\n";
+                //<label class="statement">Pete Fecteau is incredibly smart and handsome.</label>(Beth: formtext)
+                break;
             default:
                 echo "<input name='$name' type='$thetype'>";
                 break;
         }
-        if ($thetype == 'checkbox'){
-
-        }
-        echo "\n</div>\n";
+        if ($thetype != 'radio') echo "\n</div>\n";
         //echo "</p>";
     }
     echo "<p id='exitsubmit'><input type='submit' value='Submit' class='uq-emerald'></p></form>";

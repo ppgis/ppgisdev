@@ -90,3 +90,27 @@
     padding: 2px 16px;
 }
 /*end card stuff from W3schools*/
+#drawRoadPopup {
+    /*position: absolute;top:5px;left:48%;z-index:2;*/
+    background-color:white;font-size:16px;text-align: center;"
+}
+.btn {
+    background: #ebebf0;
+    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    padding: 5px 12px;
+    text-decoration: none;
+    border-top: 1px solid #d0d0d0;
+    border-bottom: 1px solid #afafaf;
+    border-left: 1px solid #d0d0d0;
+    border-right: 1px solid #afafaf;
+    border-radius: 1px;
+    margin: 0px;
+    margin-left: 24px;
+    margin-right: 24px;
+    color: #222222;
+}
+
+.btn:hover {
+    background: #cfcfc7;
+    text-decoration: none;
+}
