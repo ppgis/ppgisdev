@@ -20,9 +20,12 @@ var bclistener;
 var staticmap = true;
 var locationBar = false;
 var locationBarVisible = false;
-var userpolyline = null;
 var roadBarVisible = false;
 var havearoad = false;
+var buildingRoad = false;
+var roadListener;
+var endRoad;
+var userroad = null;
 
 function myMap() {
     var mapCanvas = document.getElementById("map");
@@ -39,8 +42,18 @@ function myMap() {
         }
     };
     map = new google.maps.Map(mapCanvas, mapOptions);
-
-
+    //TODO make the bounds reset work
+    if (userroadpath != null){
+        startRoad();
+        userroad.setPath(userroadpath);
+    }
+    if (!staticmap) {
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById('drawRoadPopup'));
+        roadBarVisible = false;
+        roadBar = document.getElementById('drawRoadPopup');
+        roadBar.style.display = "none";
+    }
+    //now for the markers
     if (oldusericons != null){
         var minlat = oldusericons[0].lat;
         var maxlat = oldusericons[0].lat;
@@ -234,93 +247,93 @@ function showLocationBar(){
     pacinput.focus();
 }
 
-
+function disableSave(){
+    var tmpsave = document.getElementById('tmpsave');
+    tmpsave.className = 'dullbox';
+    tmpsave.onclick = '';
+    tmpsave.title = 'Save disabled during road construction';
+    var finalsave = document.getElementById('finalsave');
+    finalsave.className = 'dullbox';
+    finalsave.onclick = '';
+    finalsave.title = 'Save disabled during road construction';
+}
+function enableSave(){
+    var tmpsave = document.getElementById('tmpsave');
+    tmpsave.className = 'box';
+    tmpsave.onclick = function(){submitjson('temp');};
+    tmpsave.title = 'Save Map';
+    var finalsave = document.getElementById('finalsave');
+    finalsave.className = 'box';
+    finalsave.onclick = function(){submitjson('final');};
+    finalsave.title = "Finished: Save and Submit";
+}
 
 function drawRoad(){
     if (locationBarVisible) hideLocationBar();
     if (!havearoad){//initialise
-        initRoadBar();
+        startRoad();
+        roadListener = map.addListener('click', addLatLng);
+        endRoad = map.addListener('dblclick',finRoad);
+        buildingRoad = true;
     }
+    else {buildingRoad = false;}
     if (!roadBarVisible){
+        disableSave();
         showRoadBar();
+        if (havearoad) userroad.setEditable(true);
     }
     else {
+        enableSave();
         hideRoadBar();
-    }
-}
-function restartRoad(){
-    if (havearoad) {
-        if (userpolyline !== null) userpolyline.setMap(null);
-        userpolyline = null;
-        drawingManager.setOptions({
-            drawingControl: true,
-            drawingMode: google.maps.drawing.OverlayType.POLYLINE
-        });
+        if (havearoad) userroad.setEditable(false);
     }
 }
 
-function initRoadBar(){
+function addLatLng(event) {
+        var path = userroad.getPath();
+        path.push(event.latLng);
+}
+
+function finRoad(event){
+        google.maps.event.removeListener(roadListener);
+        google.maps.event.removeListener(endRoad);
+}
+
+function showroad(){
+    console.log(userroad);
+}
+
+function restartRoad(){
+    userroad.setPath([]);
+}
+
+function startRoad(){
     havearoad = true;
-    drawingManager = new google.maps.drawing.DrawingManager({
-        drawingMode: google.maps.drawing.OverlayType.POLYLINE,
-        drawingControl: false,
-        drawingControlOptions: {
-            //position: google.maps.ControlPosition.TOP_CENTER,
-            drawingModes: [ ]
-        },
-        polylineOptions: {
+    userroad = new google.maps.Polyline ({
             strokeColor: '#ff0000',
             strokeOpacity: 0.6,
             strokeWeight: 2,
             clickable: true,
-            editable: true,
             zIndex: 1
-        }
     });
-    drawingManager.setMap(map);
-    google.maps.event.addListener(drawingManager, 'overlaycomplete', function(polygon) {
-        //coordinatesArray = polygon.overlay.getPath().getArray();
-        // alert(coordinatesArray);
-        userpolyline = polygon;
-    });
-    google.maps.event.addListener(drawingManager, 'polylinecomplete', function(polygon) {
-        userpolyline = polygon;
-        drawingManager.setOptions({
-            drawingControl: false,
-            drawingMode: null
-        });
-    });
-
-    map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById('drawRoadPopup'));
+    userroad.setMap(map);
 }
 function hideRoadBar(){
-    if (userpolyline !== null) {
-        var len = userpolyline.getPath().getLength();
+    if (userroad !== null) {
+        var len = userroad.getPath().getLength();
         if (len > 0) document.getElementById('roadicon').title = 'Edit or Redraw your road';
         else document.getElementById('roadicon').title = 'Add a road';
     }
     else document.getElementById('roadicon').title = 'Add a road';
     roadBarVisible = false;
-    if (userpolyline!==null) userpolyline.setOptions({editable: false});
     roadBar = document.getElementById('drawRoadPopup');
     roadBar.style.display="none";
-    drawingManager.setOptions({
-        drawingControl: false,
-        drawingMode: null
-    });
-    drawingManager.setMap(null);
 }
 function showRoadBar(){
     document.getElementById('roadicon').title = 'Finish drawing';
-    drawingManager.setMap(map);
     roadBarVisible = true;
     roadBar = document.getElementById('drawRoadPopup');
     roadBar.style.display="block";
-    if (userpolyline!==null) userpolyline.setOptions({editable: true});
-    else drawingManager.setOptions({
-        drawingControl: true,
-        drawingMode: google.maps.drawing.OverlayType.POLYLINE
-    });
 }
 
 function makemarkerlist(){
@@ -506,9 +519,22 @@ function submitjson(savetype){
     var markersjson = JSON.stringify(allmarkers);
     //alert('markers are: '+markersjson);
     document.getElementById('markersjson').value = markersjson;
+    if (userroad != null){
+        var roadjson = getroadJSON();
+        document.getElementById('roadjson').value = roadjson;
+    }
     document.getElementById('savetype').value = savetype;
     //alert('markers in form are: '+document.getElementById('markersjson').value);
     document.getElementById('markerForm').submit();
+}
+
+function getroadJSON(){
+    var roadLatLngs = userroad.getPath().getArray();
+    var tmparr = [];
+    for (var i =0;i<userroad.getPath().getLength();i++){
+        tmparr[i] = [roadLatLngs[i].lat(),roadLatLngs[i].lng()];
+    }
+    return JSON.stringify(tmparr);
 }
 
 // Not used : When the user clicks on <div>, open the popup

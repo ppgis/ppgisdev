@@ -66,6 +66,7 @@ else{
 //got to here so we are doing mapping.
 $nicons = 0;
 $oldusericons = 'null';
+$road = 'null';
 //open the database and find the icons
 $mysqli = new mysqli('localhost', $config['uname'], $config['password'], $config['dbname']);
 if ($mysqli) { //got database
@@ -106,10 +107,14 @@ if ($mysqli) { //got database
                 $message .= "<br>Missing file " . $fulliconname;
             }
         }
-        //the user may have icons saved in either the temp or the permanent table
+        //the user may have icons saved in the table
         $oldusericons = getusericons($mysqli, $uID, $icontourl);
         $nusericons = sizeof($oldusericons);
         if ($nusericons == 0) $oldusericons = 'null';
+        //users may have a saved road
+        $road = getuserroad($mysqli,$uID);
+        if (sizeof($road) == 0) $road = 'null';
+        //var_dump($road);die;
         //
 
     } else {
@@ -160,9 +165,11 @@ elseif (($hassaved) & ($nusericons > 0)){
 </head>
 <body>
 <?php
+
 echo '<script type="text/javascript">';
 echo "staticmap = false;";
 echo "var oldusericons = $oldusericons;";
+echo "var userroadpath = $road;";
 echo "</script>";
 ?>
 <?php dotopbit2($loggedin,$displayname) ?>
@@ -196,8 +203,8 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
         <img id='targeticon' src="/images/icons/target.svg" width="32 px" title="Search for an address or place" onclick="findlocation()" class="box"><br>
         <img id='roadicon' src="/images/icons/road.svg" width="32 px" title="Add a Road" class="box" onclick = "drawRoad()"><br>
        <img src="/images/icons/help.svg" width="32 px" title="Help" onclick="gethelp()" class="box"><br>
-         <img  src="/images/icons/save.svg" width="32 px" title="Save Map" onclick="submitjson('temp');" class="box"><br>
-         <img src="/images/icons/fin.svg" width="32 px" title="Finished: Save and Submit" onclick="submitjson('final');" class="box"><br>
+         <img  src="/images/icons/save.svg" width="32 px" title="Save Map" id="tmpsave" onclick="submitjson('temp');" class="box"><br>
+         <img src="/images/icons/fin.svg" width="32 px" title="Finished: Save and Submit" id="finalsave" onclick="submitjson('final');" class="box"><br>
          <img src="/images/icons/delete.svg" title="Remove all markers" height="32 px" width="32 px" onclick="removeall()" class="box"><br>
         <div class="arrowleft"><img src="arrowin.png" onclick="hideele('LHS')" style="display: block;"/></div>
     </div>
@@ -219,6 +226,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
     </div-->
        <form id="markerForm" name="markerForm" method="post" action="savemap.php">
 					<input type="hidden" name="markersjson" id="markersjson" value="">
+           <input type="hidden" name="roadjson" id="roadjson" value="">
            <input type="hidden" name="savetype" id="savetype" value="">
        </form>
     <!--/div-->

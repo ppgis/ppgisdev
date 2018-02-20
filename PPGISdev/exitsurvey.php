@@ -61,6 +61,7 @@ else{
 //got to here so we are doing the survey.
 $oldsurveyresult = array();
 $oldusericons = 'null';
+$road = 'null';
 //$jsonoldresults = 'null';
 //open the database and find the icons
 $mysqli = new mysqli('localhost', $config['uname'], $config['password'], $config['dbname']);
@@ -124,7 +125,8 @@ if ($mysqli) { //got database
             $oldusericons = getusericons($mysqli, $uID, $icontourl);
             $nusericons = sizeof($oldusericons);
             if ($nusericons == 0) $oldusericons = 'null';
-
+            $road = getuserroad($mysqli,$uID);
+            if (sizeof($road) == 0) $road = 'null';
             //
         }
         else {
@@ -162,6 +164,7 @@ if ($message != "") {//we have to go somewhere else
 <?php
 echo '<script type="text/javascript">';
 echo "var oldusericons = $oldusericons;";
+echo "var userroadpath = $road;";
 echo "</script>";
 ?>
 <?php dotopbit2($loggedin,$displayname) ?>

@@ -12,12 +12,17 @@ $message = "";//will display on error page. anything in here will send us to the
 
 
 if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson'])) && (isset($_POST['savetype']))){
+    //var_dump($_POST['markersjson']);
     $savetype = test_input($_POST['savetype']);
     //what is the min stage at this point?
     $minstage = ($savetype=="final") ? PPGIS_stage_finmapping: PPGIS_stage_hasdraft;
     $table = "usericons";
+    $table2 = "userroads";
     $markersjson = test_json_input($_POST['markersjson']);
+    $roadjson = test_json_input($_POST['roadjson']);
     $markers = json_decode($markersjson,true);
+    $road = json_decode($roadjson,false);
+    //var_dump($road==NULL);die;
     //get dbuname from session
     session_start();
     //already have a session?
@@ -37,7 +42,12 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson'])) && 
                 $sql = "DELETE from $table WHERE userID = $uID";
                 $deleted=mysqli_query($mysqli,$sql);
                 $nrows = $mysqli->affected_rows;
+                //now remove any saved roads
+                $sql = "DELETE from $table2 WHERE userID = $uID";
+                $deleted=mysqli_query($mysqli,$sql);
+                $nrows = $mysqli->affected_rows;
                 //echo ("So, $nrows rows deleted");
+                //update the user icons table
                 $updatetable = $table;
                 $colnames = array('userID', 'iconID','latitude','longitude');
                 foreach ($markers as $iconID=>$marker){
@@ -51,10 +61,26 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['markersjson'])) && 
                           $valuetypes = 'iidd';
                           $retval = insert_row($mysqli, $updatetable, $colnames, $values, $valuetypes);
                           if (preg_match("/^error/", $retval)) {
-                              $message .= $retval;
+                              $message = $retval;
                           }
                       }
                 }
+                //update the user roads table
+                $updatetable = $table2;
+                $colnames = array('userID', 'latitude','longitude');
+                if ($road != NULL){
+                    //var_dump($road);
+                     foreach ($road as $roadpoint){
+                         //var_dump($roadpoint);
+                         $values = array($uID, (double)$roadpoint[0],(double)$roadpoint[1]);
+                         $valuetypes = 'idd';
+                         $retval = insert_row($mysqli, $updatetable, $colnames, $values, $valuetypes);
+                         if (preg_match("/^error/", $retval)) {
+                             $message = $retval;
+                         }
+                     }
+                }
+
                 //update the user stage
                 if ($userstage < $minstage){
                     $userstage = $minstage;

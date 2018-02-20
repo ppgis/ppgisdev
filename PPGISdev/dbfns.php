@@ -117,3 +117,21 @@ function getusericons($mysqli,$uID,$icontourl){
         return json_encode($allrows);
     }
 }
+
+function getuserroad($mysqli,$uID){
+    $table = "userroads";
+    $thestuff = "*";
+    $sql = "SELECT $thestuff FROM $table WHERE userID='$uID'";
+    $result = mysqli_query($mysqli, $sql);
+    if ($result->num_rows == 0) {
+        return NULL;
+    }
+    else {
+        $allrows = [];
+        while ($obj = mysqli_fetch_object($result)) {
+            $tmparray = ['lat' => (float)$obj->latitude, 'lng' => (float)$obj->longitude];
+            array_push($allrows, $tmparray);
+        }
+        return json_encode($allrows);
+    }
+}
