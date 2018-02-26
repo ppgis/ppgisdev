@@ -4,8 +4,7 @@ function trim_walk(&$value,$key)
 {
     $value=trim($value);
 }
-function getsurveyquestions($mysqli){
-    $table = "exitsurveytemplate";
+function getsurveyquestions($mysqli,$table){
     $sql = "SELECT * FROM $table";
     $result = mysqli_query($mysqli, $sql);
     $questions = array();
@@ -21,8 +20,78 @@ function getsurveyquestions($mysqli){
     }
     return $questions;
 }
-function dosurvey($questions,$oldsurveyresult){
-    echo "<form class='smallform' action='saveexitsurvey.php' method='post'>";
+
+function addsurveycolumns($mysqli,$thetemplatetable,$theresulttable){
+    $sizes = array('text'=>'varchar(50)','select'=>'varchar(25)','checkbox'=>'varchar(25)','radio'=>'varchar(25)','textarea'=>'varchar(400)');
+    $questions = getsurveyquestions($mysqli,$thetemplatetable);
+    //make a string that is the apdate command to add columns
+    $columns = array ();
+    $sql = "ALTER TABLE $theresulttable ADD ( ";
+    foreach ($questions as $num => $question) {
+        $selecttype = $question['answertype'];
+        $theQ = "Q$num";
+        $addstring = "$theQ ".$sizes[$selecttype];
+        //is it a select questiontype?
+        array_push($columns, $addstring);
+        }
+    $addcolstr = trim(implode(',', $columns), ',');
+    $sql .= $addcolstr.')';
+    $result = mysqli_query($mysqli,$sql);
+    return $result;
+}
+
+function getsurveyquestionsfromfile($thefilehandle){
+    $questions = array();
+    $row = 0;
+    while (($data = fgetcsv($thefilehandle, 1000, "\t")) !== FALSE) {
+        $num = count($data);
+        if ($num != 4) {
+            echo "<p> Error in line $row: <br /></p>\n";
+        } else {
+            if ($data[3] == 'NULL') $data[3]= '';// = array("");
+            //else $valuearray = explode(',', $data[3]);
+            $questions[$data[0]] = array("qtext" => $data[1], 'answertype' => $data[2], 'values' => $data[3]);//valuearray);
+        }
+        $row++;
+    }
+    return $questions;
+}
+
+function makenewtemplatetable($mysqli){
+
+}
+
+function testsurveyversion($surveyversion){
+    $surveythings = array();
+    $surveythings['message'] = '';
+    if (preg_match('/^[opd][0-9]+$/',$surveyversion)){
+        $surveythings['goodtogo'] = true;
+        $surveythings['templatetable'] = 'exitsurveytemplate'.$surveyversion;
+        $surveythings['surveytable'] = 'exitsurvey'.$surveyversion;
+    }
+    else{
+       $surveythings['goodtogo'] = false;
+       $surveythings['message'] = 'bad survey version';
+    }
+    return $surveythings;
+}
+
+function createsurveytable($mysqli,$tablename){
+    $fkname = 'fk_'.$tablename;
+    //drop it if it already exists
+    $result = mysqli_query($mysqli,"SHOW TABLES LIKE '$tablename''");
+    if ($result->num_rows == 1) $result = mysqli_query($mysqli,"DROP TABLE $tablename");
+    if (!$result) die('Error dropping table');
+    $sql = "CREATE TABLE $tablename (userID int(11) NOT NULL,timestamp int(11) NOT NULL, PRIMARY KEY (userID),CONSTRAINT $fkname FOREIGN KEY (userID) REFERENCES users (ID) ON DELETE CASCADE ON UPDATE CASCADE)";
+    $result = mysqli_query($mysqli, $sql);
+    return $result;
+}
+
+function dosurvey($questions,$oldsurveyresult,$action,$surveyversion,$istest){
+    //write table creation for survey answers possibly using JSON string of columns
+    echo "<form class='smallform' action='$action' method='post'>";
+    //save the surveyversion
+    echo "<input type='hidden' name='surveyversion' value='$surveyversion'>";
     foreach ($questions as $num=>$question){
         $thetext = $question['qtext'];
         //echo "<p>";
@@ -121,7 +190,6 @@ function dosurvey($questions,$oldsurveyresult){
 
                 }
                 echo "\n </ul>\n";
-                //<label class="statement">Pete Fecteau is incredibly smart and handsome.</label>(Beth: formtext)
                 break;
             default:
                 echo "<input name='$name' type='$thetype'>";
@@ -132,6 +200,24 @@ function dosurvey($questions,$oldsurveyresult){
     }
     echo "<p id='exitsubmit'><input type='submit' value='Submit' class='uq-emerald'></p></form>";
 
+}
+function showsurveyfiles($surveyfiles)
+{
+    if ($surveyfiles == []) {
+        echo 'No survey input files found. Check that they exist and try again.';
+    } else {
+        echo '<form class = "smallform" name="stuff" action="testsurvey.php" method="post">';
+        echo '<select name="thefile">';
+
+        foreach ($surveyfiles as $thefile) {
+            echo "<option class='uq-emerald' value=\"$thefile\">$thefile</option>";
+        }
+
+        echo '</select>';
+        echo '<input type="submit" value="Submit selected survey file for testing.">';
+        echo '</form>';
+
+    }
 }
 /*function ee($thing){
     echo ($thing);

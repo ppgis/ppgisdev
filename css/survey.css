@@ -56,3 +56,4 @@ form.smallform div.longformtext{
     text-align:center;
     vertical-align:top;
 }
+select {background: transparent;padding: 5px 10px;margin-left: 15px;border: 1px solid #d0d0d0;}

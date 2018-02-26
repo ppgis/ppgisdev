@@ -124,7 +124,7 @@
 .surveycontainer{
     /*text-align: center;*/
     width: 90%;
-    min-height: 450px;
+    /* min-height: 450px;*/
     background-color: white;
     margin: auto;
     margin-top: 20px;
@@ -135,7 +135,7 @@
 }
 .surveydialogue{
     text-align: left;
-    width: 100%;
+    /*width: 100%;*/
     min-width: 200px;
     background-color: #fafafa;
     border-radius: 0px;
@@ -448,3 +448,12 @@ input[type=email] {
 .formtext {width: 150px;}
 #exitsubmit {margin: auto;max-width:150px;}
 
+hr {
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: inset;
+    border-width: 1px;
+}

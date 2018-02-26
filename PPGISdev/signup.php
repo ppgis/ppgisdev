@@ -45,7 +45,7 @@ else {
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //require '../../configure.php';
-        $signupvars = array('username'=>'uname','password'=>'pword','retype_password'=>'pword2','email'=>'email');
+        $signupvars = array('username'=>'uname','password'=>'pword','retype_password'=>'pword2','email'=>'email','usertype'=>'usertype');
 
         foreach ($signupvars as $postname => $varname){
             if (isset($_POST[$postname])) $$varname = test_input($_POST[$postname]);
@@ -86,9 +86,9 @@ else {
                     $errorMessage = "Email address '$email' is already taken. Please try another.";
                 } else {
                     $phash = password_hash($pword, PASSWORD_DEFAULT);
-                    $colnames = array('uname', 'password', 'email','stageID');
-                    $values = array($uname, $phash, $email,1);//stageID 1 for registered user
-                    $valuetypes = 'sssi';
+                    $colnames = array('uname', 'password', 'email','stageID','usertype');
+                    $values = array($uname, $phash, $email,1,$usertype);//stageID 1 for registered user
+                    $valuetypes = 'sssis';
                     $retval = insert_row($mysqli, $table, $colnames, $values, $valuetypes);
 
                     if (preg_match("/^error/", $retval)) {
@@ -157,6 +157,14 @@ if ($message != "") {//we have to go somewhere else
                    placeholder="Password" title="use at least 6 of a-z A-z 0-9 - _ and no spaces">
             <div class="formtext">retype the password:</div>
             <input type="password"  name="retype_password" required="required">
+            <div class='formtext'>Choose a usertype</div>
+            <div class='surveyformanswer'>
+                <select name='usertype'>
+                    <option value=<?php echo "'".PPGIS_other."'"?> selected>Other</option>
+                    <option value=<?php echo "'".PPGIS_developer."'"?> >Developer</option>
+                    <option value=<?php echo "'".PPGIS_planner."'"?> >Planner</option>
+                </select>
+            </div>
             <p>
             <div class="formtext">(Optional) email address</div>
             <input type="email"  name="email"

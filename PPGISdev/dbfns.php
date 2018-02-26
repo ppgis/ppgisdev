@@ -36,7 +36,7 @@ function insert_row($mysqli,$table,$columns,$values,$valuetypes){
         $qstr .=")";
 
         //ee("INSERT INTO $table $colstr VALUES $qstr");
-        //var_dump($bind_params);
+        //var_dump($bind_params);die;
         if (!($SQL = $mysqli->prepare("INSERT INTO $table $colstr VALUES $qstr"))){
             $result = "error in mysqli prepare"."INSERT INTO $table $colstr VALUES $qstr";
             return $result;

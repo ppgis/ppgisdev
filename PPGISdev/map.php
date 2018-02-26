@@ -193,7 +193,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
 
     <input id="pac-input" class="controls" type="text"
        placeholder="Enter a location." style="display:none">
-    <div id="drawRoadPopup" class="alertcard" style="display:none;"><div class="alertcontainer">Click to create points along the road.<br>Double-click to finish and edit.</div>
+    <div id="drawRoadPopup" class="alertcard" style="display:none;"><div class="alertcontainer" id="drawRoadPopuptext"></div>
         <div class="alertimage" style="padding: 8px">
             <button onclick="restartRoad()" class="btn">Restart</button><button onclick="drawRoad()" class="btn">I'm done!</button></div></div>
 
@@ -213,8 +213,11 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
         </div>
     <!--RHS popout section follows-->
     <div class="RHS shadowy" id="RHSbig" style="display: none;">
-      Markers Placed:
+      <div class="centredtext">Markers Placed:</div>
         <div class="rT" id="iconlist"></div>
+        <hr>
+        <div class="centredtext">User Road:</div>
+        <div class="rT centredtext" id="roadlist"></div>
         <div class="arrowright"><img src="arrowout.png"  title="close list" onclick="hideele('RHS')"/></div>
     </div>
     <div class="RHS shadowy" id="RHSsmall" display = "block">
@@ -230,7 +233,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
            <input type="hidden" name="savetype" id="savetype" value="">
        </form>
     <!--/div-->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap&libraries=places,drawing"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap&libraries=places,geometry"></script>
 
     <!--?php echo "debug values: <br>session status is ".session_status()."<br>";
     echo "session name is ".session_name()."<br>";

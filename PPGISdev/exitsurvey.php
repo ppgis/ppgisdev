@@ -80,9 +80,9 @@ if ($mysqli) { //got database
                 change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
             }
             $_SESSION['userstage'] = $userstage;
-
+            $table = 'exitsurveytemplate';
             //while the database is open, get the survey questions from the template
-            $questions = getsurveyquestions($mysqli);
+            $questions = getsurveyquestions($mysqli,$table);
             if ($questions){
                 $dosurveyform = true;
                 $questionids = array_keys($questions);
@@ -173,7 +173,7 @@ echo "</script>";
         <div class="mappysmall" id="map"></div>
         <div class="surveydialogue">
             <h2 style="text-align: center;">Exit Survey</h2>
-            <?php if ($dosurveyform) dosurvey($questions,$oldsurveyresult);?>
+            <?php if ($dosurveyform) dosurvey($questions,$oldsurveyresult,'saveexitsurvey.php',$surveyversion,false);?>
         </div>
 
     </div>

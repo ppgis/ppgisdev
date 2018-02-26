@@ -12,6 +12,12 @@ define("PPGIS_stage_finsurvey", 6);
 define("PPGIS_guestDisplayName", "Guest");
 define("PPGIS_map_before_survey",'Before doing the survey please visit the mapping page and Save.');
 define("PPGIS_map_before_survey_message",'mapbeforesurvey');
+define("PPGIS_administrator","A");
+define("PPGIS_planner","P");
+define("PPGIS_developer","D");
+define("PPGIS_other","O");
+
+
 
 function send_html_mail($to,$from,$subject,$message){
 

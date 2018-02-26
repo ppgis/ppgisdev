@@ -22,10 +22,11 @@ var locationBar = false;
 var locationBarVisible = false;
 var roadBarVisible = false;
 var havearoad = false;
-var buildingRoad = false;
+//var buildingRoad = false;
 var roadListener;
 var endRoad;
 var userroad = null;
+var amlisteningtoroad = false;
 
 function myMap() {
     var mapCanvas = document.getElementById("map");
@@ -164,7 +165,12 @@ function dropmarker(){
 
 
 function findlocation(){
-    if (roadBarVisible) hideRoadBar();
+    if (roadBarVisible) {
+        enableSave();
+        hideRoadBar();
+        if (amlisteningtoroad) finRoadlistener();
+        if (havearoad) userroad.setEditable(false);
+    }
     if (!locationBar) {//then initialise
        initLocationBar();
     }
@@ -272,19 +278,26 @@ function drawRoad(){
     if (locationBarVisible) hideLocationBar();
     if (!havearoad){//initialise
         startRoad();
-        roadListener = map.addListener('click', addLatLng);
-        endRoad = map.addListener('dblclick',finRoad);
-        buildingRoad = true;
+        startRoadlistener();
+        //buildingRoad = true;
     }
-    else {buildingRoad = false;}
+    else {
+        if (userroad.getPath().getLength()==0){
+            //buildingRoad = true;
+            startRoadlistener();
+        }
+        //else buildingRoad = false;
+    }
     if (!roadBarVisible){
         disableSave();
         showRoadBar();
         if (havearoad) userroad.setEditable(true);
+        //have already started the listener above
     }
     else {
         enableSave();
         hideRoadBar();
+        if (amlisteningtoroad) finRoadlistener();
         if (havearoad) userroad.setEditable(false);
     }
 }
@@ -292,11 +305,18 @@ function drawRoad(){
 function addLatLng(event) {
         var path = userroad.getPath();
         path.push(event.latLng);
+    if (document.getElementById('RHSbig').style.display==='block') updateroadlist();
 }
 
-function finRoad(event){
+function finRoadlistener(){
+    amlisteningtoroad = false;
         google.maps.event.removeListener(roadListener);
-        google.maps.event.removeListener(endRoad);
+    document.getElementById('drawRoadPopuptext').innerText = 'Drag road vertices to reshape.';
+}
+function startRoadlistener(){
+    amlisteningtoroad = true;
+    roadListener = map.addListener('click', addLatLng);
+    document.getElementById('drawRoadPopuptext').innerText = 'Click to create points on the Road.';
 }
 
 function showroad(){
@@ -305,6 +325,8 @@ function showroad(){
 
 function restartRoad(){
     userroad.setPath([]);
+    if (!amlisteningtoroad) startRoadlistener();
+    if (document.getElementById('RHSbig').style.display==='block') updateroadlist();
 }
 
 function startRoad(){
@@ -334,6 +356,8 @@ function showRoadBar(){
     roadBarVisible = true;
     roadBar = document.getElementById('drawRoadPopup');
     roadBar.style.display="block";
+    if (amlisteningtoroad) document.getElementById('drawRoadPopuptext').innerText = 'Click to create points on the Road.';
+    else document.getElementById('drawRoadPopuptext').innerText = 'Drag road vertices to reshape.';
 }
 
 function makemarkerlist(){
@@ -475,21 +499,35 @@ function anotherline() {
         newdiv.appendChild(myImage);
         iconlist.appendChild(newdiv);
         j = 0;
-        makeappendspantext(iconlist,markertoadd.lats[j].toFixed(2), classname);
+        makeappendspantext(iconlist,markertoadd.lats[j].toFixed(3), classname);
         makeappendtext(iconlist, ',', classname);
-        makeappendspantext(iconlist,markertoadd.longs[j].toFixed(2), classname);
+        makeappendspantext(iconlist,markertoadd.longs[j].toFixed(3), classname);
         for (j=1;j<nlatlngs;j++) {
             makeappend(iconlist,'br');
             //add some empty spans
             makeappendspantext(iconlist,' ', classname);
             makeappendspantext(iconlist,' ', classname);
             //add the number of icons
-            makeappendspantext(iconlist,markertoadd.lats[j].toFixed(2), classname);
+            makeappendspantext(iconlist,markertoadd.lats[j].toFixed(3), classname);
             makeappendtext(iconlist, ',', classname);
-            makeappendspantext(iconlist,markertoadd.longs[j].toFixed(2), classname);
+            makeappendspantext(iconlist,markertoadd.longs[j].toFixed(3), classname);
             //newele.setAttribute()
         }
         makeappend(iconlist,'br');
+    }
+    //now for the road
+    updateroadlist();
+}
+function updateroadlist(){
+    roadlist = document.getElementById('roadlist');
+    if (userroad != null){
+        var roadlen = userroad.getPath().getLength();
+        if (roadlen == 0) roadlist.innerText = "No road";
+        else if (roadlen == 1) roadlist.innerText = "1 Point";
+        else roadlist.innerText = roadlen+" Points";
+    }
+    else {
+        roadlist.innerText = "No road";
     }
 }
 
