@@ -6,7 +6,9 @@ function trim_walk(&$value,$key)
 }
 function getsurveyquestions($mysqli,$table){
     $sql = "SELECT * FROM $table";
+    //ee($sql);
     $result = mysqli_query($mysqli, $sql);
+    //var_dump($result);
     $questions = array();
     //the template table has the questions and possible reponses for dropdowns etc
     //questionID, questiontext, questiontype('text','select','checkbox','textarea'),csv_values
@@ -44,21 +46,30 @@ function getsurveyquestionsfromfile($thefilehandle){
     $questions = array();
     $row = 0;
     while (($data = fgetcsv($thefilehandle, 1000, "\t")) !== FALSE) {
+        $row++;
         $num = count($data);
         if ($num != 4) {
             echo "<p> Error in line $row: <br /></p>\n";
+            var_dump($data);
         } else {
             if ($data[3] == 'NULL') $data[3]= '';// = array("");
             //else $valuearray = explode(',', $data[3]);
             $questions[$data[0]] = array("qtext" => $data[1], 'answertype' => $data[2], 'values' => $data[3]);//valuearray);
         }
-        $row++;
     }
     return $questions;
 }
 
-function makenewtemplatetable($mysqli){
-
+function getsurveryversion($mysqli,$usertype){
+    $usertype = (in_array($usertype,array('d','p','o')))?$usertype:'o';
+  $sql = "SHOW TABLES LIKE 'exitsurvey".$usertype."%'";
+  $result = mysqli_query($mysqli,$sql);
+  $tables = array();
+  while ($row = mysqli_fetch_array($result,MYSQLI_NUM)){
+     array_push($tables, (int)filter_var($row[0], FILTER_SANITIZE_NUMBER_INT));
+  }
+  if (count($tables)==0) return NULL;
+  else return $usertype.max($tables);
 }
 
 function testsurveyversion($surveyversion){
@@ -79,12 +90,41 @@ function testsurveyversion($surveyversion){
 function createsurveytable($mysqli,$tablename){
     $fkname = 'fk_'.$tablename;
     //drop it if it already exists
-    $result = mysqli_query($mysqli,"SHOW TABLES LIKE '$tablename''");
-    if ($result->num_rows == 1) $result = mysqli_query($mysqli,"DROP TABLE $tablename");
-    if (!$result) die('Error dropping table');
+    $result = mysqli_query($mysqli,"SHOW TABLES LIKE '$tablename'");
+    if ($result->num_rows == 1) {
+        $result = mysqli_query($mysqli,"DROP TABLE $tablename");
+        if (!$result) die('Error dropping table');
+    }
     $sql = "CREATE TABLE $tablename (userID int(11) NOT NULL,timestamp int(11) NOT NULL, PRIMARY KEY (userID),CONSTRAINT $fkname FOREIGN KEY (userID) REFERENCES users (ID) ON DELETE CASCADE ON UPDATE CASCADE)";
     $result = mysqli_query($mysqli, $sql);
     return $result;
+}
+
+function doradios($sizes){
+    echo "<style>\n";
+    foreach ($sizes as $size){
+        if ($size !=0) {
+            $x = (100.0/(float)$size);
+            $y = ($size-1)*$x + 3;
+            $z = (100.0 - $y)/2.0 - 1.5;
+            $x = 0.94*$x;
+            echo "form .likert.n" . $size . ":before {left:" .$z. "%;width:".$y."%;}\n";
+            echo "form .likert.n" . $size . " li {width:" .$x. "%;}\n";
+        }
+    }
+    echo "</style>\n";
+}
+
+function getradiosizes($questions){
+    $sizes = array();
+    foreach ($questions as $num=>$question){
+        $thetype = $question['answertype'];
+        if ($thetype == 'radio'){
+            $nvalues = sizeof($question['values']);
+            if (($nvalues >0)&&(!in_array($nvalues,$sizes))) array_push($sizes,$nvalues);
+        }
+    }
+    return $sizes;
 }
 
 function dosurvey($questions,$oldsurveyresult,$action,$surveyversion,$istest){
@@ -198,7 +238,8 @@ function dosurvey($questions,$oldsurveyresult,$action,$surveyversion,$istest){
         if ($thetype != 'radio') echo "\n</div>\n";
         //echo "</p>";
     }
-    echo "<p id='exitsubmit'><input type='submit' value='Submit' class='uq-emerald'></p></form>";
+    $submittext = $istest ? 'Implement this Survey now!' : 'Submit';
+    echo "<p id='exitsubmit'><input type='submit' value='$submittext' class='uq-emerald' style='max-width:none;'></p></form>";
 
 }
 function showsurveyfiles($surveyfiles)

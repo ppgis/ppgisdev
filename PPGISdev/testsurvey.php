@@ -65,7 +65,7 @@ else{
             $uID = $obj->ID;
             $usertype = $obj->usertype;
             //the user must be an administrator
-            if ($usertype >= PPGIS_administrator) {
+            if ($usertype == PPGIS_administrator) {
 
                 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
                     $allfiles = scandir("/tmp", 1);
@@ -78,7 +78,7 @@ else{
                 }
                 else {//we should know the survey filename
                     $thefile = test_input($_POST['thefile']);
-                    echo $thefile . "<br>";
+                    //echo $thefile . "<br>";
                     $surveyversion = str_replace('survey','',strtolower($thefile));
                     $surveyversion = str_replace('.txt','',$surveyversion);
                     $row = 1;
@@ -104,7 +104,7 @@ else{
                        //hopefully have colnames now
                         //var_dump($questions);
                         foreach ($questions as $questionID=>$questionsarray) {
-                            var_dump($questionsarray['qtext']);
+                            //var_dump($questionsarray['qtext']);
                             $values = array($questionID,$questionsarray['qtext'] ,$questionsarray['answertype'],$questionsarray['values']);
                             $valuetypes = 'isss';
                             $retval = insert_row($mysqli, $temptable, $colnames, $values, $valuetypes);
@@ -113,6 +113,7 @@ else{
                         if ($questions) {
                             $dosurveyform = true;
                             $questionids = array_keys($questions);
+                            $sizes = getradiosizes($questions);
                         } else {
                             $dosurveyform = false;
                             $message = "Couldn't read survey questions from temporary table. " . $config['syserror'];
@@ -151,6 +152,10 @@ if ($message != "") {//we have to go somewhere else
 <head>
     <?php doheadermin($pagetitle) ?>
     <link rel="stylesheet" type="text/css" href="/css/survey.css">
+    <?php if ($dosurveyform && (count($sizes)>0)) {
+                doradios($sizes);
+            }
+            ?>
 </head>
 <body>
 <script type="text/javascript" src="/js/mapping.js"></script>
@@ -166,7 +171,7 @@ echo "</script>";
         <div class="surveydialogue">
 
             <?php if ($dosurveyform) {
-                echo '<h2 style="text-align: center;">Simulation of new Exit Survey</h2>';
+                echo "<h2 style='text-align: center;'>Simulation of new Exit Survey from $thefile</h2>";
                 dosurvey($questions,$oldsurveyresult,'savenewsurvey.php',$surveyversion,true);
             }
             else {

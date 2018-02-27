@@ -49,9 +49,13 @@ if ($surveythings['goodtogo']) {
                     $sql = "SHOW TABLES like '$thetable'";
                     $result = mysqli_query($mysqli,$sql);
                     if ($result->num_rows==1){
+                        $surveyexists = true;
                         $sql = "DELETE FROM $thetable WHERE 1";
                     }
-                    else {$sql = "CREATE TABLE $thetable LIKE tempsurveytemplate";}
+                    else {
+                        $surveyexists = false;
+                        $sql = "CREATE TABLE $thetable LIKE tempsurveytemplate";
+                    }
                     $result1 = mysqli_query($mysqli, $sql);
                     $sql = "INSERT $thetable SELECT * from tempsurveytemplate";
                     $result2 = mysqli_query($mysqli, $sql);
@@ -62,6 +66,7 @@ if ($surveythings['goodtogo']) {
                         if (!$result) die ('Error creating survey table.');
                         $result = addsurveycolumns($mysqli,$thetable,$theresulttable);
                         if (!$result) die ('Error inserting columns into new table.');
+                        //finally at this point, it should have worked!
                     }
                     else $message = 'SQL create table failed';
                 }else {//not an admin!
@@ -75,13 +80,18 @@ if ($surveythings['goodtogo']) {
             $message = "Database Connect error.<br>" . $config['syserror'];
         }
     } else {
-        $message = "No login found on survey exit. " . $config['syserror'];
+        $message = "Your login has expired or did not exist! " . $config['syserror'];
     }
 }
 else $message = "No survey data found.";
 
 if ($message == ''){
-    $message = 'You have successfully created a new survey.';
+    if ($surveyexists){
+        $message = "You have successfully updated survey, version $surveyversion";
+    }
+    else {
+       $message = "You have successfully created a new survey, version $surveyversion.";
+    }
     $msgtype = 'success';
 }
    $errorPageMessage = "Location: errorpage.php?message=" . $message . "&msgtype=" . $msgtype;

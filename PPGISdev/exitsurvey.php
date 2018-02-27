@@ -71,6 +71,7 @@ if ($mysqli) { //got database
         $obj = mysqli_fetch_object($uname_found);
         $uID = $obj->ID;
         $userstage = $obj->stageID;
+
         //the user must have submitted some mapping in order to do the survey
         if ($userstage >= PPGIS_stage_hasdraft) {
 
@@ -80,7 +81,12 @@ if ($mysqli) { //got database
                 change_row($mysqli, 'users', array('stageID'), array($userstage), 'i', 'ID', $uID);
             }
             $_SESSION['userstage'] = $userstage;
-            $table = 'exitsurveytemplate';
+            $usertype = strtolower($obj->usertype);
+            $surveyversion = getsurveryversion($mysqli,$usertype);
+            if ($surveyversion == NULL) phpMessageandgo('Could not find survey table in database. ',$msgtype);
+            $surveythings = testsurveyversion($surveyversion);
+            if (!$surveythings['goodtogo']) phpMessageandgo($surveythings['message'],$msgtype);
+            $table = $surveythings['templatetable'];
             //while the database is open, get the survey questions from the template
             $questions = getsurveyquestions($mysqli,$table);
             if ($questions){
@@ -88,12 +94,15 @@ if ($mysqli) { //got database
                 $questionids = array_keys($questions);
             }
             else {
-                $dosurveyform = false;
+                $dosurveyform = false;//this var probably not needed now
                 $message = "Could not find any survey questions! ". $config['syserror'];
+                phpMessageandgo($message,$msgtype);
             }
+            $sizes = getradiosizes($questions);
             //var_dump($questionids);
             //load up any saved survey values for this user
-            $oldsurveyresults = check_exist($mysqli, 'exitsurvey', 'userID', $uID, 'i');
+            $table = $surveythings['surveytable'];
+            $oldsurveyresults = check_exist($mysqli, $table, 'userID', $uID, 'i');
             if ($oldsurveyresults->num_rows != 0) {
                 $obj = mysqli_fetch_assoc($oldsurveyresults);
                 $oldsurveyresult = $obj;
@@ -121,7 +130,7 @@ if ($mysqli) { //got database
                     $message .= "<br>Missing file " . $fulliconname;
                 }
             }
-            //the user may have icons saved in either the table
+            //the user may have icons saved
             $oldusericons = getusericons($mysqli, $uID, $icontourl);
             $nusericons = sizeof($oldusericons);
             if ($nusericons == 0) $oldusericons = 'null';
@@ -158,6 +167,10 @@ if ($message != "") {//we have to go somewhere else
 <head>
     <?php doheadermin($pagetitle) ?>
     <link rel="stylesheet" type="text/css" href="/css/survey.css">
+    <?php if ($dosurveyform && (count($sizes)>0)) {
+        doradios($sizes);
+    }
+    ?>
 </head>
 <body>
 <script type="text/javascript" src="/js/mapping.js"></script>

@@ -11,7 +11,7 @@ form .likert {
     margin:0;
     padding:0 0 35px;
     display:block;
-    border-bottom:2px solid #efefef;
+    /*border-bottom:2px solid #efefef;*/
 }
 form .likert:last-of-type {border-bottom:0;}
 form .likert:before {
@@ -21,11 +21,11 @@ form .likert:before {
     display:block;
     background-color:#efefef;
     height:4px;
-    width:78%;
+    /*width:78%;*/
 }
-form .likert.n4:before {
+/*form .likert.n4:before {
     left:9.5%;
-}
+}*/
 
 form .likert li {
     display:inline-block;
@@ -33,9 +33,10 @@ form .likert li {
     vertical-align: top;
 }
 
-form .likert.n4 li {
+/*form .likert.n4 li {
     width:24%;
-}
+}*/
+
 
 form .likert li input[type=radio] {
     display:block;

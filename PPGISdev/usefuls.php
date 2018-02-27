@@ -159,6 +159,10 @@ function dofooter(){
 END;
     echo $stuff;
 }
+function phpMessageandgo($message,$msgtype){
+    $errorPageMessage = "Location: errorpage.php?message=" . $message . "&msgtype=" . $msgtype;
+    header($errorPageMessage);
+}
 
 function phpAlertandgo($msg,$page){
     echo"<script type='text/javascript'>alert('$msg');document.location.href = '$page.php';</script>";
