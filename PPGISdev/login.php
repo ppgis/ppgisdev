@@ -54,10 +54,17 @@ else {//there is no session yet
     $sessionuname = "not logged in";
     $isaguest = false;
     $badguest = true;
-
+    //foreach($_POST as $key=>$value){
+    //    ee($key);ee($value);
+   // }
+    //die;
     //did they click continue as guest? (Could come from post or get)
     if (($_SERVER['REQUEST_METHOD'] == 'POST') && (isset($_POST['guesty']))){
         $isaguest = true;
+        if (isset($_POST['usertype'])){
+            $usertype = test_usertype(test_input($_POST['usertype']));
+        }
+        else $usertype = PPGIS_other;
         if (test_input($_POST['guesty'])===$testforguest){
             $badguest = false;
         };
@@ -92,9 +99,11 @@ else {//there is no session yet
                         //unique email includes ip address
                         $ip = preg_replace('/\s+/', '', $_SERVER['REMOTE_ADDR']);
                         $email = preg_replace('/@/', '', $ip . $uname);
-                        $colnames = array('uname', 'password', 'email','stageID');
-                        $values = array($uname, $phash, $email,0);//status 0 for guest user
-                        $valuetypes = 'sssi';
+
+                        $colnames = array('uname', 'password', 'email','stageID','usertype');
+                        $values = array($uname, $phash, $email,0,$usertype);//stageID 0 for guest user
+                        $valuetypes = 'sssis';
+
                         $retval = insert_row($mysqli, $table, $colnames, $values, $valuetypes);
 
                         if (preg_match("/^error/", $retval)) {
@@ -107,12 +116,8 @@ else {//there is no session yet
                             $userstage = '0';
                         }
 
-                    } else {//must have found this guest but we will let them continue
-                        /*beth old $isguest = '1'; */
-                        $sessionuname = PPGIS_guestDisplayName;//'Guest';
-                        $dbuname = $uname;
-                        $message = $goodlogin;
-                        $userstage = '0';
+                    } else {//must have found this guest. Oh dear.
+                        $message = "Sorry, the Database has run out of Guest space! <br>". $config['syserror'];
                     }
                  //todo save a login event to the database
 
@@ -206,6 +211,7 @@ $displaycp = 'block';
         <div class="error" id="signuperror"><?php echo $errorMessage ?></div>
     </div>
     <div style="text-align:left;">
+        <i><h3 class="centredtext">Login:</h3></i>
     <form method="post" action="login.php" onsubmit="return validate(this,'up')" class="smallform">
         <div class="formtext">Username:</div>
         <input type="text" name="username" required="required"
@@ -217,12 +223,11 @@ $displaycp = 'block';
         <p class="centredtext" ><input type="submit" value='Submit' class="uq-emerald" style="text-align:center"></p>
     </form>
 
-    <div class="goto centredtext" ><a href="cprequest.php" style="display:<?php echo $displaycp?>">Forgotten Password?</a></div>
-    <div style="background-color: white;width: 100%">
-        <form method="post" action="login.php">
-            <input type="hidden" name="guesty" value="<?php echo $testforguest?>">
-            <p class="centredtext"><input class="uq-emerald" type="submit" value="Continue as Guest" id="guesty"></p>
-        </form>
+    <div class="goto centredtext" ><a href="cprequest.php" style="display:<?php echo $displaycp?>">Forgotten Password?</a></div><br>
+    <!--div style="background-color: white;width: 100%"-->
+
+        <i><h3 class="centredtext">Temporary Guest Alternative:</h3></i>
+    <?php doguestform($testforguest) ?>
     </div>
 </div>
 

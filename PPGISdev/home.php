@@ -49,10 +49,14 @@ else{
         <?php homemessage($loggedin,$displayname) ?>
     </div>
     <?php if (!$loggedin) {
-        echo "<div class='homedialogue'> Alternatively, you may complete a single private session<br> " ;
-        echo "<a href='login.php?guesty=$testforguest'>as a guest</a></div>";
+        echo "<div class='homedialogue'>Alternatively</div>";
+        doguestform($testforguest);
+        //echo "<div class='homedialogue'> Alternatively, you may complete a single private session<br> " ;
+        //echo "<a href='login.php?guesty=$testforguest'>as a guest</a></div>";
     }
     ?>
+
+
 </div>
 
 

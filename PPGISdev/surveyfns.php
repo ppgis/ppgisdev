@@ -6,9 +6,9 @@ function trim_walk(&$value,$key)
 }
 function getsurveyquestions($mysqli,$table){
     $sql = "SELECT * FROM $table";
-    //ee($sql);
     $result = mysqli_query($mysqli, $sql);
-    //var_dump($result);
+    //TODO fix error messages for false result values
+    if(!$result) die("Problem reading survey table $table from database.");
     $questions = array();
     //the template table has the questions and possible reponses for dropdowns etc
     //questionID, questiontext, questiontype('text','select','checkbox','textarea'),csv_values
@@ -60,8 +60,8 @@ function getsurveyquestionsfromfile($thefilehandle){
     return $questions;
 }
 
-function getsurveryversion($mysqli,$usertype){
-    $usertype = (in_array($usertype,array('d','p','o')))?$usertype:'o';
+function getsurveyversion($mysqli,$usertype){
+    $usertype = test_usertype($usertype);
   $sql = "SHOW TABLES LIKE 'exitsurvey".$usertype."%'";
   $result = mysqli_query($mysqli,$sql);
   $tables = array();
@@ -197,11 +197,18 @@ function dosurvey($questions,$oldsurveyresult,$action,$surveyversion,$istest){
                 else echo "<textarea maxlength='400' style='resize:none' name='$name' rows=5 cols=30></textarea>";
                 break;
             case 'select':
-                if (isset($oldsurveyresult[$name]))$tempvalue = $oldsurveyresult[$name];
-                else $tempvalue = 'xxxx';
+
+                if (isset($oldsurveyresult[$name])){
+                    $tempvalue = $oldsurveyresult[$name];
+                    if (in_array($tempvalue,$question['values'])) $haveavalue = true;
+                }
+                else $tempvalue = NULL;
                 echo "<select name='$name'>";
+                //put an empty string as the first element and this should be default if nothing selected
+                //or nothing was saved
+                echo "<option value=''>Select...</option>";
                 foreach ($question['values'] as $thevalue) {
-                    if ($thevalue == $tempvalue)
+                    if (($haveavalue) && ($thevalue == $tempvalue))
                         echo "<option value='$thevalue' selected>$thevalue</option>";
                     else
                         echo "<option value='$thevalue'>$thevalue</option>";

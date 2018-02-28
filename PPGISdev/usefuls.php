@@ -12,11 +12,11 @@ define("PPGIS_stage_finsurvey", 6);
 define("PPGIS_guestDisplayName", "Guest");
 define("PPGIS_map_before_survey",'Before doing the survey please visit the mapping page and Save.');
 define("PPGIS_map_before_survey_message",'mapbeforesurvey');
-define("PPGIS_administrator","A");
-define("PPGIS_planner","P");
-define("PPGIS_developer","D");
-define("PPGIS_other","O");
-
+define("PPGIS_administrator","a");
+define("PPGIS_planner","p");
+define("PPGIS_developer","d");
+define("PPGIS_other","o");
+define("PPGIS_usertypes",array(PPGIS_planner,PPGIS_developer,PPGIS_other));
 
 
 function send_html_mail($to,$from,$subject,$message){
@@ -192,4 +192,25 @@ END;
 }
 function showloading(){//show loading gif
     echo '<div id="loadingdiv"><img src="/images/icons/loading.gif" style="position:absolute; z-index:-2;top:220px;left:50%"></div>';
+}
+
+function doguestform($testforguest){
+    $other = PPGIS_other;
+    $dev = PPGIS_developer;
+    $plan = PPGIS_planner;
+$stuff=<<<END
+    <form method="post" action="login.php" class="smallform">
+        <input type="hidden" name="guesty" value="$testforguest">
+        <div class='formtext'><i>continue as a guest of type: </i></div>
+        <div class='surveyformanswer'>
+            <select name='usertype' style="margin-left:0px;" onchange="this.form.submit()">
+                <option value="" disabled selected hidden>Please Choose...</option>
+                <option value=$other>Other</option>
+                <option value=$dev>Developer</option>
+                <option value=$plan>Planner</option>
+            </select>
+        </div>
+    </form>
+END;
+    echo $stuff;
 }

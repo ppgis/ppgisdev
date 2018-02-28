@@ -42,7 +42,7 @@ if ($surveythings['goodtogo']) {
                 $obj = mysqli_fetch_object($uname_found);
                 $usertype = $obj->usertype;
                 //the user must be an administrator
-                if ($usertype >= PPGIS_administrator) {
+                if ($usertype == PPGIS_administrator) {
                     $uID = $obj->ID;//now see if there are any entries already in the exitsurvey table
                     //clone the temporary table
                     $thetable = $surveythings['templatetable'];

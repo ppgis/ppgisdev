@@ -18,6 +18,7 @@ session_start();
 //were to go back to after login?
 $gotonext = empty($_SESSION['comebackto'])? 'home.php': $_SESSION['comebackto'];
 $phpgotonext = "Location: ".$gotonext;
+$backhere = 'signup.php';//in case we need to logout and come back here
 
 $loggedin = false;
 
@@ -86,6 +87,7 @@ else {
                     $errorMessage = "Email address '$email' is already taken. Please try another.";
                 } else {
                     $phash = password_hash($pword, PASSWORD_DEFAULT);
+                    $usertype = test_usertype($usertype);
                     $colnames = array('uname', 'password', 'email','stageID','usertype');
                     $values = array($uname, $phash, $email,1,$usertype);//stageID 1 for registered user
                     $valuetypes = 'sssis';
@@ -125,7 +127,7 @@ if ($message != "") {//we have to go somewhere else
         header($errorPageMessage);
     }
 }
-
+$testforguest = $config['testforguest'];
 
 ?>
 
@@ -140,6 +142,7 @@ if ($message != "") {//we have to go somewhere else
 
 <div class="contentcontainer">
     <div class="dialogue">
+        <i><h3 class="centredtext">Sign up:</h3></i>
         <div class="error" id="signuperror"><?php echo $errorMessage ?></div>
     <ul>
         <li>use only letters, numbers, dash, or underscore</li>
@@ -159,7 +162,7 @@ if ($message != "") {//we have to go somewhere else
             <input type="password"  name="retype_password" required="required">
             <div class='formtext'>Choose a usertype</div>
             <div class='surveyformanswer'>
-                <select name='usertype'>
+                <select name='usertype' style="margin-left:0px;">
                     <option value=<?php echo "'".PPGIS_other."'"?> selected>Other</option>
                     <option value=<?php echo "'".PPGIS_developer."'"?> >Developer</option>
                     <option value=<?php echo "'".PPGIS_planner."'"?> >Planner</option>
@@ -171,7 +174,9 @@ if ($message != "") {//we have to go somewhere else
                    placeholder = "email@address">
             <p class="centredtext" ><input type="submit" value='Submit' class="uq-emerald" style="text-align:center"></p>
         </form>
-    <!--TODO put a back to home link-->
+
+    <i><h3 class="centredtext">Temporary Guest Alternative:</h3></i>
+    <?php doguestform($testforguest) ?>
     </div>
 
 

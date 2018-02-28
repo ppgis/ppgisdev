@@ -82,8 +82,8 @@ if ($mysqli) { //got database
             }
             $_SESSION['userstage'] = $userstage;
             $usertype = strtolower($obj->usertype);
-            $surveyversion = getsurveryversion($mysqli,$usertype);
-            if ($surveyversion == NULL) phpMessageandgo('Could not find survey table in database. ',$msgtype);
+            $surveyversion = getsurveyversion($mysqli,$usertype);
+            if ($surveyversion == NULL) phpMessageandgo('Could not find a survey. ',$msgtype);
             $surveythings = testsurveyversion($surveyversion);
             if (!$surveythings['goodtogo']) phpMessageandgo($surveythings['message'],$msgtype);
             $table = $surveythings['templatetable'];

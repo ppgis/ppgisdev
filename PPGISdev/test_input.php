@@ -57,5 +57,8 @@ function test_email($email){
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $result = "Invalid Email";
     return $result;
 }
+function test_usertype($usertype){
+    return (in_array($usertype,PPGIS_usertypes)?$usertype:PPGIS_other);
+}
 
 ?>
