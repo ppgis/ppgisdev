@@ -251,21 +251,24 @@ function dosurvey($questions,$oldsurveyresult,$action,$surveyversion,$istest){
 }
 function showsurveyfiles($surveyfiles)
 {
-    if ($surveyfiles == []) {
+    /*if ($surveyfiles == []) {
         echo 'No survey input files found. Check that they exist and try again.';
-    } else {
-        echo '<form class = "smallform" name="stuff" action="testsurvey.php" method="post">';
-        echo '<select name="thefile">';
+    } else {*/
+    echo "<div class='contentcontainer'>";
+        echo '<form class = "smallform" name="stuff" action="testsurvey.php" method="post" enctype="multipart/form-data">';
+        /*echo '<select name="thefile">';
 
         foreach ($surveyfiles as $thefile) {
             echo "<option class='uq-emerald' value=\"$thefile\">$thefile</option>";
         }
 
-        echo '</select>';
-        echo '<input type="submit" value="Submit selected survey file for testing.">';
+        echo '</select>';*/
+        echo '<input type="file" name="fileToUpload" id="fileToUpload" accept=".txt">';
+        echo '<input type="submit" value="Submit file for testing." style="width:150px">';
         echo '</form>';
+        echo '</div>';
 
-    }
+    //}
 }
 /*function ee($thing){
     echo ($thing);

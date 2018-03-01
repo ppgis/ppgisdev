@@ -77,46 +77,67 @@ else{
                     }
                 }
                 else {//we should know the survey filename
-                    $thefile = test_input($_POST['thefile']);
-                    //echo $thefile . "<br>";
-                    $surveyversion = str_replace('survey','',strtolower($thefile));
-                    $surveyversion = str_replace('.txt','',$surveyversion);
-                    $row = 1;
-                    if (($handle = fopen("/tmp/$thefile", "r")) !== FALSE) {
-                        $questions = getsurveyquestionsfromfile($handle);
-                        fclose($handle);
-                        if (count($questions)==0) $message = 'No readable questions found';
-                    } else {
-                        $message = "Error: survey input file not found";
+
+                    $uploadOk = 1;
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    if (finfo_file($finfo, $_FILES["fileToUpload"]["tmp_name"]) != 'text/plain') {
+                        $uploadOk = 0 ;
+                        $message = 'This is not a plain text file.';
                     }
-                    if ($message == '') {
-                        //empty the temp table
-                        $temptable = 'tempsurveytemplate';
-                        $sql = "TRUNCATE TABLE $temptable";
-                        $result = mysqli_query($mysqli, $sql);
-                        //write the new questions to the temp table
-                        $sql = "describe $temptable";
-                        $result = mysqli_query($mysqli,$sql);
-                        $colnames = array();
-                        while($record = mysqli_fetch_array($result)){
-                            array_push($colnames,$record['0']);
-                        }
-                       //hopefully have colnames now
-                        //var_dump($questions);
-                        foreach ($questions as $questionID=>$questionsarray) {
-                            //var_dump($questionsarray['qtext']);
-                            $values = array($questionID,$questionsarray['qtext'] ,$questionsarray['answertype'],$questionsarray['values']);
-                            $valuetypes = 'isss';
-                            $retval = insert_row($mysqli, $temptable, $colnames, $values, $valuetypes);
-                        }
-                        $questions = getsurveyquestions($mysqli,$temptable);
-                        if ($questions) {
-                            $dosurveyform = true;
-                            $questionids = array_keys($questions);
-                            $sizes = getradiosizes($questions);
+                    $fname = basename($_FILES["fileToUpload"]["name"]);
+                    if (!preg_match('/survey[opd][0-9]+\.txt/',$fname)) {
+                        echo 'here';
+                        $uploadOk = 0 ;
+                        $message = 'File name should match survey[odp]n.txt';
+                        echo $fname;die;
+                    }
+
+                    if ($uploadOk) {
+                        $target_dir = "/tmp/";
+                        $basename = basename($_FILES["fileToUpload"]["name"]);
+                        $thefile = $target_dir . $basename;
+                        move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $thefile);
+                        $handle = fopen($thefile, "r");
+                        //echo $thefile . "<br>";
+                        $surveyversion = str_replace('survey', '', strtolower($basename));
+                        $surveyversion = str_replace('.txt', '', $surveyversion);
+                        $row = 1;
+                        if ($handle !== FALSE) {
+                            $questions = getsurveyquestionsfromfile($handle);
+                            fclose($handle);
+                            if (count($questions) == 0) $message = 'No readable questions found';
                         } else {
-                            $dosurveyform = false;
-                            $message = "Couldn't read survey questions from temporary table. " . $config['syserror'];
+                            $message = "Error: survey input file not found";
+                        }
+                        if ($message == '') {
+                            //empty the temp table
+                            $temptable = 'tempsurveytemplate';
+                            $sql = "TRUNCATE TABLE $temptable";
+                            $result = mysqli_query($mysqli, $sql);
+                            //write the new questions to the temp table
+                            $sql = "describe $temptable";
+                            $result = mysqli_query($mysqli, $sql);
+                            $colnames = array();
+                            while ($record = mysqli_fetch_array($result)) {
+                                array_push($colnames, $record['0']);
+                            }
+                            //hopefully have colnames now
+                            //var_dump($questions);
+                            foreach ($questions as $questionID => $questionsarray) {
+                                //var_dump($questionsarray['qtext']);
+                                $values = array($questionID, $questionsarray['qtext'], $questionsarray['answertype'], $questionsarray['values']);
+                                $valuetypes = 'isss';
+                                $retval = insert_row($mysqli, $temptable, $colnames, $values, $valuetypes);
+                            }
+                            $questions = getsurveyquestions($mysqli, $temptable);
+                            if ($questions) {
+                                $dosurveyform = true;
+                                $questionids = array_keys($questions);
+                                $sizes = getradiosizes($questions);
+                            } else {
+                                $dosurveyform = false;
+                                $message = "Couldn't read survey questions from temporary table. " . $config['syserror'];
+                            }
                         }
                     }
                 }
@@ -177,6 +198,7 @@ echo "</script>";
             else {
                 echo '<h2 style="text-align: center;">Choose Exit Survey template file</h2>';
                 showsurveyfiles($surveyfiles);
+
             }?>
         </div>
 
