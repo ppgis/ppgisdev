@@ -111,8 +111,54 @@ function dotopbit2($loggedin,$displayname){
     $activepage = preg_replace('/.php.*/','.php',$activepage);
     //get rid of leading stuff
     $activepage = preg_replace('/^.*\//','',$activepage);
-$pages = array(
-    'Mapping' => 'map.php');//this is for the pages after log in
+    $pages = array('Mapping' => 'map.php');//this is for the pages after log in
+    //first do the PPGIS home link on the LHS of the topbar
+    echo "<nav>";
+    echo "<ul style='list-style-type: none'>";
+    if ($activepage=='home.php') echo "<li><a class='navactive' href='home.php'>";
+    else echo "    <li><a  href='home.php'>";
+    echo "PPGIS home</a></li>";
+    //from now on need to add navactive tag if $activepage
+    if ($loggedin){
+        $userstage = $_SESSION['userstage'];
+        if ($userstage >= PPGIS_stage_finmapping){
+           $pages['Survey'] = 'exitsurvey.php';
+        }
+    }
+    if ($loggedin){
+        foreach ($pages as $pagetitle => $pageurl) {
+            if ($activepage==$pageurl) echo "<li><a class = 'navactive' href='$pageurl'>$pagetitle</a></li>";
+            else echo "<li><a href='$pageurl'>$pagetitle</a></li>";
+        }
+    }
+
+
+    if ($loggedin){
+
+        echo "<li class='navnotli'> $displayname<span style='padding: 0px 12px;display: inline-block;height: 100%;vertical-align: middle;'><img src='/images/icons/user2.svg' height='16px'></span>  </li>";
+        if ($activepage=='logout.php') echo "<li><a class='navactive' href='logout.php'>Logout</a></li>";
+        else echo "<li><a href='logout.php'>Logout</a></li>";
+        //echo "<li class='emph navnotli'>&#9734 $displayname &#9734</li>";
+    } else{
+        if ($activepage=='login.php') echo "<li><a class='navactive' href=login.php>Login</a></li>";
+        else echo "<li><a href='login.php'>Login</a></li>";
+
+        if ($activepage=='signup.php') echo "<li><a class='navactive' href=signup.php>Sign up</a></li>";
+        else {echo "<li><a href='signup.php'>Sign up</a></li>";}
+    }
+    echo "</ul>";
+echo "</nav>";
+
+}
+
+function dotopbit2old($loggedin,$displayname){
+    $activepage = test_input($_SERVER['SCRIPT_NAME']);
+    //get rid of trailing stuff
+    $activepage = preg_replace('/.php.*/','.php',$activepage);
+    //get rid of leading stuff
+    $activepage = preg_replace('/^.*\//','',$activepage);
+    $pages = array(
+        'Mapping' => 'map.php');//this is for the pages after log in
     //first do the PPGIS link on the LHS of the topbar
     echo "<nav class='darkbg'>";
     echo "<ul style='list-style-type: none'>";
@@ -121,7 +167,7 @@ $pages = array(
     if ($loggedin){
         $userstage = $_SESSION['userstage'];
         if ($userstage >= PPGIS_stage_finmapping){
-           $pages['Survey'] = 'exitsurvey.php';
+            $pages['Survey'] = 'exitsurvey.php';
         }
         if ($activepage=='logout.php') echo "<li><a class='navactive' href='logout.php'>Logout</a></li>";
         else echo "<li><a href='logout.php'>Logout</a></li>";
@@ -149,12 +195,12 @@ END;
     echo $stuff;
 }
 
-
-
 function dofooter(){
     $stuff=<<<END
-<footer class="bottombit darkbg" >
-    <a href="mailhandler.php"> Contact</a>
+<footer class="bottombit" >
+<ul style='list-style-type: none'>
+    <li><a href="mailhandler.php"> Contact</a></li>
+</ul>
 </footer>
 END;
     echo $stuff;

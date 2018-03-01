@@ -34,12 +34,20 @@ function myMap() {
     //todo get bounds
     var mapOptions = {
         center: myCenter,
-        zoom: 10,
+        zoom: 13,
         fullscreenControl: false,
         mapTypeControl: true,
         mapTypeControlOptions: {
             style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-            position: google.maps.ControlPosition.BOTTOM_LEFT
+            position: google.maps.ControlPosition.TOP_LEFT
+        },
+        zoomControl: true,
+        zoomControlOptions: {
+            position: google.maps.ControlPosition.LEFT_CENTER
+        },
+        streetViewControl: true,
+        streetViewControlOptions: {
+            position: google.maps.ControlPosition.LEFT_CENTER
         }
     };
     map = new google.maps.Map(mapCanvas, mapOptions);
@@ -83,11 +91,15 @@ function myMap() {
             }
             bclistener.remove();
         });
+
     }
     if (staticmap) {
         google.maps.event.addListenerOnce(map, "idle", function () {
             showmap();
         });
+    }
+    else {
+        anotherline();
     }
     //doesn't work if (staticmap) {}
 }
@@ -324,7 +336,7 @@ function showroad(){
 }
 
 function restartRoad(){
-    userroad.setPath([]);
+    if (userroad != null)userroad.setPath([]);
     if (!amlisteningtoroad) startRoadlistener();
     if (document.getElementById('RHSbig').style.display==='block') updateroadlist();
 }
@@ -472,13 +484,27 @@ function hideele(side){
     smallele = document.getElementById(side+'small');
     bigele.style.display = 'none';
     smallele.style.display = 'block';
+    ex1ele = document.getElementsByClassName('ex1')[0];
+    if (side=='RHS'){
+        ex1ele.style.marginRight='30px';
+    }
+    else {
+        ex1ele.style.marginLeft='30px';
+    }
 }
 function unhideele(side){
     bigele = document.getElementById(side+'big');
     smallele = document.getElementById(side+'small');
     bigele.style.display = 'block';
     smallele.style.display = 'none';
-    if (side=='RHS') anotherline();
+    ex1ele = document.getElementsByClassName('ex1')[0];
+    if (side=='RHS') {
+        anotherline();
+        ex1ele.style.marginRight='150px';
+    }
+    else {
+        ex1ele.style.marginLeft='50px';
+    }
 }
 function anotherline() {
     var classname = 'rTC';
@@ -486,35 +512,38 @@ function anotherline() {
     iconlist.innerHTML = "";
     var markertoadd,n,j;
     allmarkers = makemarkerlist();//make var
-    for (var iconID in allmarkers) {
-        markertoadd = allmarkers[iconID];
-        //how many of them?
-        nlatlngs = markertoadd.lats.length;
-        makeappendspantext(iconlist,nlatlngs,'rTCn');
-        //add the images source//TODO cut this down
-        var newdiv = document.createElement('span');
-        newdiv.className=classname;
-        var myImage = new Image(20, 20);
-        myImage.src = markertoadd.src;
-        newdiv.appendChild(myImage);
-        iconlist.appendChild(newdiv);
-        j = 0;
-        makeappendspantext(iconlist,markertoadd.lats[j].toFixed(3), classname);
-        makeappendtext(iconlist, ',', classname);
-        makeappendspantext(iconlist,markertoadd.longs[j].toFixed(3), classname);
-        for (j=1;j<nlatlngs;j++) {
-            makeappend(iconlist,'br');
-            //add some empty spans
-            makeappendspantext(iconlist,' ', classname);
-            makeappendspantext(iconlist,' ', classname);
-            //add the number of icons
-            makeappendspantext(iconlist,markertoadd.lats[j].toFixed(3), classname);
+    var nomarkers = true;
+        for (var iconID in allmarkers) {
+            nomarkers = false;
+            markertoadd = allmarkers[iconID];
+            //how many of them?
+            nlatlngs = markertoadd.lats.length;
+            makeappendspantext(iconlist, nlatlngs, 'rTCn');
+            //add the images source//TODO cut this down
+            var newdiv = document.createElement('span');
+            newdiv.className = classname;
+            var myImage = new Image(20, 20);
+            myImage.src = markertoadd.src;
+            newdiv.appendChild(myImage);
+            iconlist.appendChild(newdiv);
+            j = 0;
+            makeappendspantext(iconlist, markertoadd.lats[j].toFixed(3), classname);
             makeappendtext(iconlist, ',', classname);
-            makeappendspantext(iconlist,markertoadd.longs[j].toFixed(3), classname);
-            //newele.setAttribute()
+            makeappendspantext(iconlist, markertoadd.longs[j].toFixed(3), classname);
+            for (j = 1; j < nlatlngs; j++) {
+                makeappend(iconlist, 'br');
+                //add some empty spans
+                makeappendspantext(iconlist, ' ', classname);
+                makeappendspantext(iconlist, ' ', classname);
+                //add the number of icons
+                makeappendspantext(iconlist, markertoadd.lats[j].toFixed(3), classname);
+                makeappendtext(iconlist, ',', classname);
+                makeappendspantext(iconlist, markertoadd.longs[j].toFixed(3), classname);
+                //newele.setAttribute()
+            }
+            makeappend(iconlist, 'br');
         }
-        makeappend(iconlist,'br');
-    }
+        if (nomarkers) makeappendspantext(iconlist, 'No markers', 'rTCNone');
     //now for the road
     updateroadlist();
 }
@@ -589,6 +618,7 @@ function removeall() {
     for (var markerID in googlemarkers){
         googlemarkers[markerID].setMap(null);
         delete googlemarkers[markerID];
+        //nmarkers = 0;
     }
     if (document.getElementById('RHSbig').style.display==='block') anotherline();
     restartRoad();

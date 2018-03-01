@@ -85,7 +85,7 @@
 
 /* Add some padding inside the card container */
 .alertcontainer {
-    background-color: #540060;
+    background-color: #565656;/*uq-purple#540060;*/
     color: white;
     padding: 2px 16px;
 }

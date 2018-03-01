@@ -162,6 +162,25 @@ elseif (($hassaved) & ($nusericons > 0)){
         echo "window.onload = setTimeout(function(){hideSomething();},1000);";
         echo '</script>';
     ?>
+    <style>
+        div.idk {
+            width:92%;
+            margin: auto;
+            height: 800px;
+            padding-top:0px;
+            background-color: #fafafa;
+
+        }
+        div.ex1 {
+            background-color: white;
+            max-width: 90%;
+            margin-left: 50px;
+            margin-right: 150px;
+            height: 750px;
+            overflow: scroll;
+            border: solid 10px #f5f6f7;
+        }
+    </style>
 </head>
 <body>
 <?php
@@ -175,7 +194,8 @@ echo "</script>";
 <?php dotopbit2($loggedin,$displayname) ?>
 
 <span ondragover="getcoords(event)">
-    <div style="padding: 0px 10px ;">
+    <div style="padding: 5px 10px ;">
+        <div>Wasup?</div>
         <?php //place the icons
 
         foreach ($allmyicons as $anicon){//http://localhost/images/icons/icon3s.png
@@ -196,36 +216,46 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
     <div id="drawRoadPopup" class="alertcard" style="display:none;"><div class="alertcontainer" id="drawRoadPopuptext"></div>
         <div class="alertimage" style="padding: 8px">
             <button onclick="restartRoad()" class="btn">Restart</button><button onclick="drawRoad()" class="btn">I'm done!</button></div></div>
-
-    <div class="mappy2" id="map"></div>
+    <div class="idk">
+    <div class="ex1 shadowy">
+    <div class="mappyold" id="map"></div>
+        </div>
+        </div>
     <!--LHS popout section follows-->
     <div class="LHS shadowy" id="LHSbig" style="display: block;">
+        <div>Click<br> menu</div>
+        <hr>
+        <div>Map<br>tools</div>
         <img id='targeticon' src="/images/icons/target.svg" width="32 px" title="Search for an address or place" onclick="findlocation()" class="box"><br>
         <img id='roadicon' src="/images/icons/road.svg" width="32 px" title="Add a Road" class="box" onclick = "drawRoad()"><br>
+                 <img src="/images/icons/delete.svg" title="Remove markers and road" height="32 px" width="32 px" onclick="removeall()" class="box"><br>
+        <hr>
+        <div>Help</div>
        <img src="/images/icons/help.svg" width="32 px" title="Help" onclick="gethelp()" class="box"><br>
+        <hr>
+        <div>Save<br>tools</div>
          <img  src="/images/icons/save.svg" width="32 px" title="Save Map" id="tmpsave" onclick="submitjson('temp');" class="box"><br>
          <img src="/images/icons/fin.svg" width="32 px" title="Finished: Save and Submit" id="finalsave" onclick="submitjson('final');" class="box"><br>
-         <img src="/images/icons/delete.svg" title="Remove all markers" height="32 px" width="32 px" onclick="removeall()" class="box"><br>
+
         <div class="arrowleft"><img src="arrowin.png" onclick="hideele('LHS')" style="display: block;"/></div>
     </div>
     <div class="LHS shadowy" id="LHSsmall" style="display: none;">
     <div class="arrowleft shadowy"><img src="arrowout.png" onclick="unhideele('LHS')" style="display: block;"/></div>
-        </div>
+    </div>
     <!--RHS popout section follows-->
-    <div class="RHS shadowy" id="RHSbig" style="display: none;">
+    <div class="RHS shadowy" id="RHSbig" style="display: block;">
       <div class="centredtext">Markers Placed:</div>
-        <div class="rT" id="iconlist"></div>
+        <div class="centredtext" id="iconlist" ></div>
         <hr>
         <div class="centredtext">User Road:</div>
-        <div class="rT centredtext" id="roadlist"></div>
+        <div class="rTC centredtext" id="roadlist"></div>
         <div class="arrowright"><img src="arrowout.png"  title="close list" onclick="hideele('RHS')"/></div>
     </div>
-    <div class="RHS shadowy" id="RHSsmall" display = "block">
+    <div class="RHS shadowy" id="RHSsmall" style="display: none;">
         <div class="arrowright shadowy"><img src="arrowin.png" title="list your markers" onclick="unhideele('RHS')"/></div>
     </div>
 
     <!--div class="mapcontainer" style="position: relative;display:table-cell;">
-
     </div-->
        <form id="markerForm" name="markerForm" method="post" action="savemap.php">
 					<input type="hidden" name="markersjson" id="markersjson" value="">
@@ -233,7 +263,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
            <input type="hidden" name="savetype" id="savetype" value="">
        </form>
     <!--/div-->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap&libraries=places,geometry"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcNYflMeXlK4itfmIDTSxv5cp_J8k4pvE&callback=myMap&libraries=places"></script>
 
     <!--?php echo "debug values: <br>session status is ".session_status()."<br>";
     echo "session name is ".session_name()."<br>";
