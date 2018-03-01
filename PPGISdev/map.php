@@ -195,7 +195,7 @@ echo "</script>";
 
 <span ondragover="getcoords(event)">
     <div style="padding: 5px 10px ;">
-        <div>Wasup?</div>
+        <div>Drag menu: Choose an icon and drag it to a specific location on the map.</div>
         <?php //place the icons
 
         foreach ($allmyicons as $anicon){//http://localhost/images/icons/icon3s.png
