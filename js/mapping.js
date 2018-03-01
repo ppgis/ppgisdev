@@ -57,7 +57,7 @@ function myMap() {
         userroad.setPath(userroadpath);
     }
     if (!staticmap) {
-        map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById('drawRoadPopup'));
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('drawRoadPopup'));
         roadBarVisible = false;
         roadBar = document.getElementById('drawRoadPopup');
         roadBar.style.display = "none";
@@ -317,13 +317,14 @@ function drawRoad(){
 function addLatLng(event) {
         var path = userroad.getPath();
         path.push(event.latLng);
-    if (document.getElementById('RHSbig').style.display==='block') updateroadlist();
+        updateroadlist();
 }
 
 function finRoadlistener(){
     amlisteningtoroad = false;
         google.maps.event.removeListener(roadListener);
     document.getElementById('drawRoadPopuptext').innerText = 'Drag road vertices to reshape.';
+    updateroadlist();
 }
 function startRoadlistener(){
     amlisteningtoroad = true;
@@ -362,6 +363,7 @@ function hideRoadBar(){
     roadBarVisible = false;
     roadBar = document.getElementById('drawRoadPopup');
     roadBar.style.display="none";
+    updateroadlist();
 }
 function showRoadBar(){
     document.getElementById('roadicon').title = 'Finish drawing';
