@@ -260,3 +260,23 @@ $stuff=<<<END
 END;
     echo $stuff;
 }
+/*function doguestform($testforguest){
+    $other = PPGIS_other;
+    $dev = PPGIS_developer;
+    $plan = PPGIS_planner;
+    $types = "'$other','$dev','$plan')";
+    $cmdo = "submitit('".$other."',".$types;
+    $cmdd = "submitit('".$dev."',".$types;
+    $cmdp = "submitit('".$plan."',".$types;
+    $stuff=<<<END
+    <form method="post" action="login.php" class="smallform" id="guesttypeform">
+        <input type="hidden" name="guesty" value="$testforguest">
+        <input type="hidden" id="usertype" name="usertype">
+        <span class='formtext'><i>continue as a guest of type: </i></span>
+    </form>
+<button class='guestbtn' onclick="$cmdd">Developer</button>
+<button class='guestbtn' onclick="$cmdp">Planner</button>
+<button class='guestbtn' onclick="$cmdo">Other</button>
+END;
+    echo $stuff;
+}*/

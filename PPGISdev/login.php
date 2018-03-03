@@ -114,6 +114,8 @@ else {//there is no session yet
                             $dbuname = $uname;
                             $message = $goodlogin;
                             $userstage = '0';
+                            $gotonext = 'map.php';//new guest can go straight to the map
+                            $phpgotonext = "Location: ".$gotonext;
                         }
 
                     } else {//must have found this guest. Oh dear.

@@ -514,3 +514,23 @@ hr {
 }
 select {background: transparent;padding: 5px 10px;margin-left: 15px;border: 1px solid #d0d0d0;}
 submit {padding: 5px 10px;}
+.guestbtn {
+    font-style: italic;
+    background: #9bceea;
+    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    padding: 5px 12px;
+    text-decoration: none;
+    border-top: 1px solid #d0d0d0;
+    border-bottom: 1px solid #afafaf;
+    border-left: 1px solid #d0d0d0;
+    border-right: 1px solid #afafaf;
+    border-radius: 1px;
+    margin: 0px;
+    margin-left: 8px;
+    margin-right: 8px;
+    color: #222222;
+}
+.guestbtn:hover {
+    background: #62a1cd;
+    text-decoration: none;
+}

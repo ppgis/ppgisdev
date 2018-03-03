@@ -86,3 +86,13 @@ function showhide(buttonID,pwNames)
     }
     return true
 }
+
+/*    function submitit(guestchoice,A,B,C){//defaults to first in list
+        typechosen = A;
+        if (guestchoice==B) typechosen = B;
+        if (guestchoice==C) typechosen = C;
+        document.getElementById('usertype').value = typechosen;
+        var theform = document.getElementById('guesttypeform');
+        theform.submit();
+    }
+*/
