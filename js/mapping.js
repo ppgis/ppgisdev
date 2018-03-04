@@ -61,6 +61,7 @@ function myMap() {
         roadBarVisible = false;
         roadBar = document.getElementById('drawRoadPopup');
         roadBar.style.display = "none";
+        if (haveBrisbaneLGA) addBrisbaneLayers();
     }
     //now for the markers
     if (oldusericons != null){
@@ -102,6 +103,14 @@ function myMap() {
         anotherline();
     }
     //doesn't work if (staticmap) {}
+}
+
+function addBrisbaneLayers(){
+    //alert(haveBrisbaneLGA+" "+BrisbaneLGA);
+    var KMLLayer = new google.maps.KmlLayer({
+        url: BrisbaneLGA,//http://localhost/kml/BrisbaneLGA.kml',
+        map: map
+    });
 }
 
 function placeMarker(location,theurl,theiconID) {

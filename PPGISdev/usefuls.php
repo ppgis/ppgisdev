@@ -260,6 +260,22 @@ $stuff=<<<END
 END;
     echo $stuff;
 }
+function setkmlvars($kmldir,$prothost){
+        $allfiles = scandir("$kmldir", 1);
+        $kmlversion = -1;
+        foreach ($allfiles as $afile) {
+            if (preg_match('/BrisbaneLGA[0-9]+\.kml/', ($afile))) {
+                $version = (int)filter_var($afile, FILTER_SANITIZE_NUMBER_INT);
+                if ($version > $kmlversion) $kmlversion = $version;
+            }
+        }
+        if  ($kmlversion == -1) echo "var haveBrisbaneLGA = false;";
+        else{
+            echo "var haveBrisbaneLGA = true;";
+            echo "var BrisbaneLGA = '$prothost/kml/BrisbaneLGA$kmlversion.kml';";
+        }
+}
+
 /*function doguestform($testforguest){
     $other = PPGIS_other;
     $dev = PPGIS_developer;

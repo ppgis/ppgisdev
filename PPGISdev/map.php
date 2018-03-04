@@ -184,9 +184,11 @@ elseif (($hassaved) & ($nusericons > 0)){
 </head>
 <body>
 <?php
-
+$kmldir = $config['kmldir'];
+$prothost = $config['protocol'].'://'.$config['hostname'];
 echo '<script type="text/javascript">';
 echo "staticmap = false;";
+setkmlvars($kmldir,$prothost);
 echo "var oldusericons = $oldusericons;";
 echo "var userroadpath = $road;";
 echo "</script>";
