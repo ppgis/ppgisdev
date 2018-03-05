@@ -98,14 +98,14 @@ if ($mysqli) { //got database
         //I couldn't think of a smart way to do this
         $icondir = $config['icondir'];
         while ($obj = mysqli_fetch_object($result)) {
-            $partialiconname = $icondir . $obj->name . ".png";
-            $fulliconname = htmlspecialchars($_SERVER['DOCUMENT_ROOT']) . $partialiconname;
-            if (file_exists($fulliconname)) {
-                $allmyicons[$nicons++] = new Icon($obj->ID, $obj->name, $obj->altval, $obj->description);
-                $icontourl[$obj->ID] = $partialiconname;
-            } else {
-                $message .= "<br>Missing file " . $fulliconname;
-            }
+                $partialiconname = $icondir . $obj->name . ".png";
+                $fulliconname = htmlspecialchars($_SERVER['DOCUMENT_ROOT']) . $partialiconname;
+                if (file_exists($fulliconname)) {
+                    $allmyicons[$nicons++] = new Icon($obj->ID, $obj->name, $obj->altval, $obj->description);
+                    $icontourl[$obj->ID] = $partialiconname;
+                } else {
+                    $message .= " Missing file " . $fulliconname;
+                }
         }
         //the user may have icons saved in the table
         $oldusericons = getusericons($mysqli, $uID, $icontourl);
@@ -168,7 +168,7 @@ elseif (($hassaved) & ($nusericons > 0)){
             margin: auto;
             height: 800px;
             padding-top:0px;
-            background-color: #fafafa;
+            background-color: white;/*#fafafa;*/
 
         }
         div.ex1 {
@@ -180,6 +180,7 @@ elseif (($hassaved) & ($nusericons > 0)){
             overflow: scroll;
             border: solid 10px #f5f6f7;
         }
+        .borderone {border: solid 10px #f5f6f7;}
     </style>
 </head>
 <body>
@@ -196,17 +197,19 @@ echo "</script>";
 <?php dotopbit2($loggedin,$displayname) ?>
 
 <span ondragover="getcoords(event)">
-    <div style="padding: 5px 10px ;">
+    <div style="padding: 5px 10px ;width:100%;margin:10px;">
         <div>Drag menu: Choose an icon and drag it to a specific location on the map.</div>
         <?php //place the icons
 
         foreach ($allmyicons as $anicon){//http://localhost/images/icons/icon3s.png
+        if ($anicon->iconID > 20) {//ignore the test icons
             $srcname = $anicon->iconname;
-            if ($anicon->icondescript!='')$icontitle = $anicon->icondescript;
+            if ($anicon->icondescript != '') $icontitle = $anicon->icondescript;
             else $icontitle = $anicon->iconaltval;//better not be null!
             echo "<img class='icon2' src='$icondir$srcname.png' alt='$anicon->iconaltval' 
 title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondragend='dropmarker()' id='$anicon->iconID'>
 ";
+        }
         }?>
     </div>
 <?php if ($alert) popupandgo($alert); else showloading();?>
@@ -224,7 +227,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
         </div>
         </div>
     <!--LHS popout section follows-->
-    <div class="LHS shadowy" id="LHSbig" style="display: block;">
+    <div class="LHS borderone shadowy" id="LHSbig" style="display: block;">
         <div>Click<br> menu</div>
         <hr>
         <div>Map<br>tools</div>
@@ -245,7 +248,7 @@ title='$icontitle' draggable='true' ondragstart='changeicon(this,event)' ondrage
     <div class="arrowleft shadowy"><img src="arrowout.png" onclick="unhideele('LHS')" style="display: block;"/></div>
     </div>
     <!--RHS popout section follows-->
-    <div class="RHS shadowy" id="RHSbig" style="display: block;">
+    <div class="RHS borderone shadowy" id="RHSbig" style="display: block;">
       <div class="centredtext">Markers Placed:</div>
         <div class="centredtext" id="iconlist" ></div>
         <hr>
